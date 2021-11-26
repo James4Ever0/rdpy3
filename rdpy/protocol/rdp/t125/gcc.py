@@ -24,7 +24,7 @@ http://msdn.microsoft.com/en-us/library/cc240508.aspx
 
 from hashlib import md5 as md5
 from rdpy.core.type import UInt8, UInt16Le, UInt32Le, CompositeType, CallableValue, String, Stream, sizeof, FactoryType, ArrayType
-import rdpy.protocol.rdp.t125.per, rdpy.protocol.rdp.t125.mcs
+import rdpy.protocol.rdp.t125.per as per, rdpy.protocol.rdp.t125.mcs as mcs
 from rdpy.core.error import InvalidExpectedDataException
 from rdpy.core import log
 from rdpy.security import x509

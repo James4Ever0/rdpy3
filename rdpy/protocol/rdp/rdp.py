@@ -28,7 +28,7 @@ import rdpy.protocol.rdp.pdu.layer
 import rdpy.protocol.rdp.pdu.data
 import rdpy.protocol.rdp.pdu.caps
 import rdpy.core.log as log
-import rdpy.protocol.rdp.tpkt, rdpy.protocol.rdp.x224, rdpy.protocol.rdp.sec
+import rdpy.protocol.rdp.tpkt as tpkt, rdpy.protocol.rdp.x224 as x224, rdpy.protocol.rdp.sec as sec
 from rdpy.protocol.rdp.t125 import mcs, gcc
 from rdpy.protocol.rdp.nla import cssp, ntlm
 

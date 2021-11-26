@@ -28,7 +28,7 @@ from rdpy.core.error import CallPureVirtualFuntion
 from rdpy.core.type import ArrayType
 import rdpy.core.log as log
 import rdpy.protocol.rdp.tpkt as tpkt
-import rdpy.protocol.rdp.pdu.data, rdpy.protocol.rdp.pdu.caps
+import rdpy.protocol.rdp.pdu.data, rdpy.protocol.rdp.pdu.caps as caps
 
 class PDUClientListener(object):
     """
@@ -301,7 +301,7 @@ class Client(PDULayer):
             if dataPDU.pduData.errorInfo.value == 0:
                 return
             errorMessage = "Unknown code %s"%hex(dataPDU.pduData.errorInfo.value)
-            if data.ErrorInfo._MESSAGES_.has_key(dataPDU.pduData.errorInfo):
+            if dataPDU.pduData.errorInfo in data.ErrorInfo._MESSAGES_: #.has_key(dataPDU.pduData.errorInfo):
                 errorMessage = data.ErrorInfo._MESSAGES_[dataPDU.pduData.errorInfo] 
             log.error("INFO PDU : %s"%errorMessage)
             
@@ -520,7 +520,7 @@ class Server(PDULayer):
         """
         if dataPDU.shareDataHeader.pduType2.value == data.PDUType2.PDUTYPE2_SET_ERROR_INFO_PDU:
             errorMessage = "Unknown code %s"%hex(dataPDU.pduData.errorInfo.value)
-            if data.ErrorInfo._MESSAGES_.has_key(dataPDU.pduData.errorInfo):
+            if dataPDU.pduData.errorInfo in data.ErrorInfo._MESSAGES_: #.has_key(dataPDU.pduData.errorInfo):
                 errorMessage = data.ErrorInfo._MESSAGES_[dataPDU.pduData.errorInfo]
             log.error("INFO PDU : %s"%errorMessage)
             

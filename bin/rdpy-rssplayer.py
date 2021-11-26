@@ -23,7 +23,7 @@ rss file player
 
 import sys, os, getopt, socket
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 from rdpy.core import log, rss
 from rdpy.ui.qt4 import QRemoteDesktop, RDPBitmapToQtImage

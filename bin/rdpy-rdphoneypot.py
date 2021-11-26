@@ -140,14 +140,14 @@ def help():
     """
     @summary: Print help in console
     """
-    print """
+    print("""
     Usage:  rdpy-rdphoneypot.py 
             [-L logfile]
             [-l listen_port default 3389] 
             [-k private_key_file_path (mandatory for SSL)] 
             [-c certificate_file_path (mandatory for SSL)] 
             rss_filepath(1..n)
-    """
+    """)
     
 if __name__ == '__main__':
     listen = "3389"

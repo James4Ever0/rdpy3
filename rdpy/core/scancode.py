@@ -55,6 +55,6 @@ def scancodeToChar(code):
     @summary: try to convert native code to char code
     @return: char
     """
-    if not _SCANCODE_QWERTY_.has_key(code):
+    if not code in _SCANCODE_QWERTY_:#.has_key(code):
         return "<unknown scancode %x>"%code
     return _SCANCODE_QWERTY_[code];

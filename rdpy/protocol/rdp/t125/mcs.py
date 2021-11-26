@@ -30,7 +30,7 @@ from rdpy.core.error import InvalidExpectedDataException, InvalidValue, InvalidS
 from rdpy.protocol.rdp.t125.ber import writeLength
 import rdpy.core.log as log
 
-import rdpy.protocol.rdp.t125.ber, rdpy.protocol.rdp.t125.gcc, rdpy.protocol.rdp.t125.per
+import rdpy.protocol.rdp.t125.ber as ber, rdpy.protocol.rdp.t125.gcc as gcc, rdpy.protocol.rdp.t125.per as per
 import rdpy.security.rsa_wrapper as rsa
 
 class Message(object):
@@ -236,7 +236,7 @@ class MCSLayer(LayerAutomata):
         per.readLength(data)
         
         #channel id doesn't match a requested layer
-        if not self._channels.has_key(channelId):
+        if not channelId in self._channels: #.has_key(channelId):
             log.error("receive data for an unconnected layer")
             return
 

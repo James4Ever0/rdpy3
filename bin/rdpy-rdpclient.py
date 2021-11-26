@@ -23,7 +23,7 @@ example of use rdpy as rdp client
 
 import sys, os, getopt, socket
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from rdpy.ui.qt4 import RDPClientQt
 from rdpy.protocol.rdp import rdp
 from rdpy.core.error import RDPSecurityNegoFail
@@ -211,7 +211,7 @@ def autoDetectKeyboardLayout():
     return "en"
         
 def help():
-    print """
+    print ("""
     Usage: rdpy-rdpclient [options] ip[:port]"
     \t-u: user name
     \t-p: password
@@ -222,7 +222,7 @@ def help():
     \t-k: keyboard layout [en|fr] [default : en]
     \t-o: optimized session (disable costly effect) [default : False]
     \t-r: rss_filepath Recorded Session Scenario [default : None]
-    """
+    """)
         
 if __name__ == '__main__':
     
@@ -270,11 +270,11 @@ if __name__ == '__main__':
         ip, port = args[0], "3389"
     
     #create application
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     
     #add qt4 reactor
-    import qt4reactor
-    qt4reactor.install()
+    import qreactor
+    qreactor.install()
     
     if fullscreen:
         width = QtGui.QDesktopWidget().screenGeometry().width()
@@ -285,4 +285,5 @@ if __name__ == '__main__':
     from twisted.internet import reactor
     reactor.connectTCP(ip, int(port), RDPClientQtFactory(width, height, username, password, domain, fullscreen, keyboardLayout, optimized, "nego", recodedPath))
     reactor.runReturn()
+    #reactor.run()
     app.exec_()

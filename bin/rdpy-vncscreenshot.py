@@ -24,7 +24,7 @@ take screenshot of login page
 """
 
 import sys, os, getopt
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 from rdpy.protocol.rfb import rfb
 import rdpy.core.log as log
 from rdpy.ui.qt4 import qtImageFormatFromRFBPixelFormat
@@ -132,9 +132,9 @@ class RFBScreenShotFactory(rfb.ClientFactory):
         return ScreenShotObserver(controller, self._path)
         
 def help():
-    print "Usage: rdpy-vncscreenshot [options] ip[:port]"
-    print "\t-o: file path of screenshot default(/tmp/rdpy-vncscreenshot.jpg)"
-    print "\t-p: password for VNC Session"
+    print("Usage: rdpy-vncscreenshot [options] ip[:port]")
+    print("\t-o: file path of screenshot default(/tmp/rdpy-vncscreenshot.jpg)")
+    print("\t-p: password for VNC Session")
         
 if __name__ == '__main__':
     #default script argument

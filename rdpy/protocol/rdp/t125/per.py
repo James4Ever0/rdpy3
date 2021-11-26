@@ -276,7 +276,7 @@ def readOctetStream(s, octetStream, minValue = 0):
     """
     size = readLength(s) + minValue
     if size != len(octetStream):
-        raise InvalidValue("incompatible size %d != %d"(len(octetStream), size))
+        raise InvalidValue("incompatible size %d != %d" % (len(octetStream), size))
     for i in range(0, size):
         c = UInt8()
         s.readType(c)

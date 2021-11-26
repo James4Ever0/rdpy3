@@ -246,7 +246,7 @@ class SimpleType(Type, CallableValue):
                     In accordance of structFormat field
         @param s: Stream that will be written
         """
-        s.write(struct.pack(self._structFormat, self.value))
+        s.write(struct.pack(self._structFormat, self.value).decode(errors='replace'))
         
     def __read__(self, s):
         """
@@ -266,7 +266,7 @@ class SimpleType(Type, CallableValue):
                     Because in Python all numbers are Int long or float
                     Cache result in self._mask field
         """
-        if not self.__dict__.has_key("_mask"):
+        if not "_masl" in self.__dict__: #.has_key("_mask"):
             mask = 0xff
             for _ in range(1, self._typeSize):
                 mask = mask << 8 | 0xff
