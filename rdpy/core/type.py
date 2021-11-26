@@ -103,7 +103,8 @@ class Type(object):
         #check constant value
         if old != self:
             #rollback read value
-            s.pos -= sizeof(self)
+            #s.pos -= sizeof(self)
+            s.seek( s.tell() - sizeof(self))
             raise InvalidExpectedDataException("%s const value expected %s != %s"%(self.__class__, old.value, self.value))
         
     def __read__(self, s):
@@ -246,7 +247,7 @@ class SimpleType(Type, CallableValue):
                     In accordance of structFormat field
         @param s: Stream that will be written
         """
-        s.write(struct.pack(self._structFormat, self.value).decode(errors='replace'))
+        s.write(struct.pack(self._structFormat, self.value))
         
     def __read__(self, s):
         """
@@ -463,7 +464,8 @@ class CompositeType(Type):
                 #read is ok but read out of bound
                 if not self._readLen is None and readLen > self._readLen.value:
                     #roll back
-                    s.pos -= sizeof(self.__dict__[name])
+                    #s.pos -= sizeof(self.__dict__[name])
+                    s.seek( s.tell() - sizeof(self.__dict__[name]))
                     #and notify if not optional
                     if not self.__dict__[name]._optional:
                         raise InvalidSize("Impossible to read type %s : read length is too small"%(self.__class__))
@@ -474,7 +476,7 @@ class CompositeType(Type):
                 for tmpName in self._typeName:
                     if tmpName == name:
                         break
-                    s.pos -= sizeof(self.__dict__[tmpName])
+                    s.seek( s.tell() - sizeof(self.__dict__[tmpName]))
                 raise e
             
         if not self._readLen is None and readLen < self._readLen.value:
@@ -809,7 +811,7 @@ class String(Type, CallableValue):
         """
         if self._readLen is None:
             if self._until is None:
-                self.value = s.getvalue()[s.pos:]
+                self.value = s.getvalue()[s.tell():]
             else:
                 self.value = ""
                 while self.value[-len(self._until):] != self._until and s.dataLen() != 0:
@@ -891,7 +893,8 @@ class Stream(BytesIO):
                     for tmpElement in value:
                         if tmpElement == element:
                             break
-                        self.pos -= sizeof(tmpElement) # TODO
+                        s.seek( s.tell() - sizeof(tmpElement))
+                        #self.pos -= sizeof(tmpElement) # TODO
                     raise e
             return
         
@@ -907,7 +910,8 @@ class Stream(BytesIO):
         @param t: Type element
         """
         self.readType(t)
-        self.pos -= sizeof(t) # TODO
+        #self.pos -= sizeof(t) # TODO
+        s.seek( s.tell() - sizeof(t))
     
     def writeType(self, value):
         """

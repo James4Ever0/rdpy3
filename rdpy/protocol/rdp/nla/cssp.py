@@ -227,7 +227,7 @@ class CSSP(protocol.Protocol):
         @summary: write data on transport layer
         @param data: {str}
         """
-        self.transport.write(str.encode(data))
+        self.transport.write(data)
     
     def startTLS(self, sslContext):
         """
