@@ -27,10 +27,10 @@ It exist channel for file system order, audio channel, clipboard etc...
 from rdpy.core.layer import LayerAutomata, IStreamSender, Layer
 from rdpy.core.type import sizeof, Stream, UInt8, UInt16Le, String
 from rdpy.core.error import InvalidExpectedDataException, InvalidValue, InvalidSize, CallPureVirtualFuntion
-from ber import writeLength
+from rdpy.protocol.rdp.t125.ber import writeLength
 import rdpy.core.log as log
 
-import ber, gcc, per
+import rdpy.protocol.rdp.t125.ber, rdpy.protocol.rdp.t125.gcc, rdpy.protocol.rdp.t125.per
 import rdpy.security.rsa_wrapper as rsa
 
 class Message(object):

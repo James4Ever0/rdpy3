@@ -25,8 +25,8 @@
 from rdpy.core.type import CompositeType, CallableValue, UInt8, UInt16Le, UInt32Le, String, sizeof, FactoryType, ArrayType, Stream
 from rdpy.core.error import InvalidExpectedDataException
 import rdpy.core.log as log
-import sec
-from t125 import gcc
+import rdpy.protocol.rdp.sec
+from rdpy.protocol.rdp.t125 import gcc
 from rdpy.security import rc4
 from rdpy.security import rsa_wrapper as rsa
 

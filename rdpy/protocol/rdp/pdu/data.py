@@ -25,7 +25,7 @@ In this layer are managed all mains bitmap update orders end user inputs
 from rdpy.core.type import CompositeType, CallableValue, String, UInt8, UInt16Le, UInt32Le, sizeof, ArrayType, FactoryType
 from rdpy.core.error import InvalidExpectedDataException
 import rdpy.core.log as log
-import caps, order
+import rdpy.protocol.rdp.pdu.caps, rdpy.protocol.rdp.pdu.order
  
 class PDUType(object):
     """

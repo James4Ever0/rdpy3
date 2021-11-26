@@ -26,7 +26,7 @@ We are in python!
 
 import struct
 from copy import deepcopy
-from StringIO import StringIO
+from io import StringIO
 from rdpy.core.error import InvalidExpectedDataException, InvalidSize, CallPureVirtualFuntion, InvalidValue
 import rdpy.core.log as log
 
@@ -857,17 +857,21 @@ class Stream(StringIO):
     @summary:  Stream use to read all types
     """
     def dataLen(self):
+        import os
         """
         @return: not yet read length
         """
-        return self.len - self.pos
+        curPos = self.tell()
+        dataL = self.seek(0, os.SEEK_END)
+        self.seek(curPos)
+        return dataL
     
     def readLen(self):
         """
         @summary: compute already read size
         @return: read size of stream
         """
-        return self.pos
+        return self.tell()
     
     def readType(self, value):
         """
@@ -886,7 +890,7 @@ class Stream(StringIO):
                     for tmpElement in value:
                         if tmpElement == element:
                             break
-                        self.pos -= sizeof(tmpElement)
+                        self.pos -= sizeof(tmpElement) # TODO
                     raise e
             return
         
@@ -902,7 +906,7 @@ class Stream(StringIO):
         @param t: Type element
         """
         self.readType(t)
-        self.pos -= sizeof(t)
+        self.pos -= sizeof(t) # TODO
     
     def writeType(self, value):
         """
@@ -915,7 +919,7 @@ class Stream(StringIO):
             for element in value:
                 self.writeType(element)
             return
-        value.write(self)
+        value.write(self) # TODO?
         
 class ArrayType(Type):
     """
