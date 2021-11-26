@@ -270,7 +270,7 @@ class FileReader(object):
         """
         @param f: {file} file pointer use to read
         """
-        self._s = Stream(f.read().decode(errors='replace'))
+        self._s = Stream(f.read())
         
     def nextEvent(self):
         """

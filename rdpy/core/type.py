@@ -26,7 +26,7 @@ We are in python!
 
 import struct
 from copy import deepcopy
-from io import StringIO
+from io import StringIO, BytesIO
 from rdpy.core.error import InvalidExpectedDataException, InvalidSize, CallPureVirtualFuntion, InvalidValue
 import rdpy.core.log as log
 
@@ -258,6 +258,7 @@ class SimpleType(Type, CallableValue):
         """
         if s.dataLen() < self._typeSize:
             raise InvalidSize("Stream is too small to read expected SimpleType")
+        print(f"DATA LEN: {s.dataLen()} || TYPE SIZE: {self._typeSize}")
         self.value = struct.unpack(self._structFormat, s.read(self._typeSize))[0]
       
     def mask(self):
@@ -852,7 +853,7 @@ def decodeUnicode(s):
         i += 1
     return r
 
-class Stream(StringIO):
+class Stream(BytesIO):
     """
     @summary:  Stream use to read all types
     """
