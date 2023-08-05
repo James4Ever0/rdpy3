@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 
+import os
 import setuptools
 from distutils.core import setup, Extension
-
-setup(name='rdpy3',
-      version='1.3.8',
+version = '1.3.9'
+packageName = 'rdpy3'
+dist = os.listdir("dist")
+vernos = []
+for fname in dist:
+    if fname.endswith(suffix := ".tar.gz"):
+        verno = fname.strip(packageName+"-").strip(suffix)
+        vernos.append(verno)
+if version in vernos:
+    raise Exception(
+        f"{version} is not latest version!\nPrevious versions: {', '.join(vernos)}")
+setup(name=packageName,
+      version=version,
       description='Remote Desktop Protocol in Python3',
       long_description_content_type="text/markdown",
       python_requires=">=3",
