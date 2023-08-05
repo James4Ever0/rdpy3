@@ -4,7 +4,7 @@ import setuptools
 from distutils.core import setup, Extension
 
 setup(name='rdpy3',
-      version='1.3.7',
+      version='1.3.8',
       description='Remote Desktop Protocol in Python3',
       long_description_content_type="text/markdown",
       python_requires=">=3",
