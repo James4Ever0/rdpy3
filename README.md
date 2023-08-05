@@ -6,7 +6,7 @@ Remote Desktop Protocol in twisted python.
 
 RDPY is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). RDPY is built over the event driven network engine Twisted. RDPY support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
 
-RDPY provides the following RDP and VNC binaries :
+RDPY provides the following RDP and VNC binaries:
 * RDP Man In The Middle proxy which record session
 * RDP Honeypot
 * RDP screenshoter
