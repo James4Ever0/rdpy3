@@ -3,7 +3,7 @@
 import setuptools
 from distutils.core import setup, Extension
 
-setup(name='rdpy',
+setup(name='rdpy3',
 	version='1.3.2',
 	description='Remote Desktop Protocol in Python',
 	long_description="""
@@ -13,34 +13,34 @@ setup(name='rdpy',
 	""",
 	author='Sylvain Peyrefitte',
 	author_email='citronneur@gmail.com',
-	url='https://github.com/citronneur/rdpy',
+	url='https://github.com/james4ever0/rdpy3',
 	packages=[
-			'rdpy', 
-			'rdpy.core',
-			'rdpy.security', 
-			'rdpy.protocol', 
-			'rdpy.protocol.rdp', 
-			'rdpy.protocol.rdp.pdu', 
-			'rdpy.protocol.rdp.nla',
-			'rdpy.protocol.rdp.t125',
-			'rdpy.protocol.rfb', 
-			'rdpy.ui'
+			'rdpy3', 
+			'rdpy3.core',
+			'rdpy3.security', 
+			'rdpy3.protocol', 
+			'rdpy3.protocol.rdp', 
+			'rdpy3.protocol.rdp.pdu', 
+			'rdpy3.protocol.rdp.nla',
+			'rdpy3.protocol.rdp.t125',
+			'rdpy3.protocol.rfb', 
+			'rdpy3.ui'
 		],
 	ext_modules=[Extension('rle', ['ext/rle.c'])],
 	scripts = [
-			'bin/rdpy-rdpclient.py',
-			'bin/rdpy-rdphoneypot.py',
-			'bin/rdpy-rdpmitm.py',
-			'bin/rdpy-rdpscreenshot.py', 
-			'bin/rdpy-rssplayer.py',
-			'bin/rdpy-vncclient.py', 
-			'bin/rdpy-vncscreenshot.py'
+			'bin/rdpy3-rdpclient.py',
+			'bin/rdpy3-rdphoneypot.py',
+			'bin/rdpy3-rdpmitm.py',
+			'bin/rdpy3-rdpscreenshot.py', 
+			'bin/rdpy3-rssplayer.py',
+			'bin/rdpy3-vncclient.py', 
+			'bin/rdpy3-vncscreenshot.py'
 		],
 	install_requires=[
 			'twisted',
           	'pyopenssl',
           	'service_identity',
-          	'qt4reactor',
+          	'qt5reactor',
           	'rsa',
           	'pyasn1'
 	  	],

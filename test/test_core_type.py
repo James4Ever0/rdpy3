@@ -26,8 +26,8 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy.core.type
-from rdpy.core.error import InvalidSize
+import rdpy3.core.type
+from rdpy3.core.error import InvalidSize
 
 class TypeTest(unittest.TestCase):
     """

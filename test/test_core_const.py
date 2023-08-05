@@ -26,8 +26,8 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy.core.const
-import rdpy.core.type
+import rdpy3.core.const
+import rdpy3.core.type
 
 class ConstTest(unittest.TestCase):
     '''

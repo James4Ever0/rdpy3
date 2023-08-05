@@ -26,7 +26,7 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy.core.layer
+import rdpy3.core.layer
 
 class LayerTest(unittest.TestCase):
     """

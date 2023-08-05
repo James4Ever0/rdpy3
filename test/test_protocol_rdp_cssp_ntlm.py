@@ -25,8 +25,8 @@ import os, sys
 # Change path so we find rdpy
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-from rdpy.protocol.rdp.nla import cssp, ntlm
-from rdpy.security import rc4
+from rdpy3.protocol.rdp.nla import cssp, ntlm
+from rdpy3.security import rc4
 
 pubKeyHex = """
 MIGJAoGBAJ6VtUEDxTPqKWUrZe8wcd1zuzA77Mpyz73g+C

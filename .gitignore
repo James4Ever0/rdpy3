@@ -6,4 +6,6 @@ README.md~
 *.os
 dist/*
 build/*
-rdpy.egg-info/*
+rdpy3.egg-info/*
+*.whl
+*.sh

@@ -26,9 +26,9 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy.protocol.rdp.t125.ber as ber
-import rdpy.core.type as type
-import rdpy.core.error as error
+import rdpy3.protocol.rdp.t125.ber as ber
+import rdpy3.core.type as type
+import rdpy3.core.error as error
 
 class BERTest(unittest.TestCase):
     """
