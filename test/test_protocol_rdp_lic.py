@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rdp.lic automata
+unit test for rdpy3.protocol.rdp.lic automata
 """
 
 import os, sys

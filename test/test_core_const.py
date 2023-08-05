@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.core.const module
+unit test for rdpy3.core.const module
 """
 
 import os, sys
@@ -32,25 +32,25 @@ import rdpy3.core.type
 class ConstTest(unittest.TestCase):
     '''
     represent test case for all classes and function
-    present in rdpy.base.const
+    present in rdpy3.base.const
     '''
     def test_type_attributes(self):
         '''
         test if type attributes decorator works
         '''
-        @rdpy.core.const.TypeAttributes(rdpy.core.type.UInt16Le)
+        @rdpy3.core.const.TypeAttributes(rdpy3.core.type.UInt16Le)
         class Test:
             MEMBER_1 = 1
             MEMBER_2 = 2
         
-        self.assertIsInstance(Test.MEMBER_1, rdpy.core.type.UInt16Le, "MEMBER_1 is not in correct type")
-        self.assertIsInstance(Test.MEMBER_2, rdpy.core.type.UInt16Le, "MEMBER_2 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_1, rdpy3.core.type.UInt16Le, "MEMBER_1 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_2, rdpy3.core.type.UInt16Le, "MEMBER_2 is not in correct type")
         
     def test_const(self):
         '''
         test if get on const class member generate new object each
         '''
-        @rdpy.core.const.ConstAttributes
+        @rdpy3.core.const.ConstAttributes
         class Test:
             MEMBER_1 = 1
             MEMBER_2 = 2

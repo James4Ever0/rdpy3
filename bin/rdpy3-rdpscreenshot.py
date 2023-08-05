@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -192,10 +192,10 @@ def main(width, height, path, timeout, hosts):
 
 
 def help():
-    print("Usage: rdpy-rdpscreenshot [options] ip[:port]")
+    print("Usage: rdpy3-rdpscreenshot [options] ip[:port]")
     print("\t-w: width of screen default value is 1024")
     print("\t-l: height of screen default value is 800")
-    print("\t-o: file path of screenshot default(/tmp/rdpy-rdpscreenshot.jpg)")
+    print("\t-o: file path of screenshot default(/tmp/rdpy3-rdpscreenshot.jpg)")
     print("\t-t: timeout of connection without any updating order (default is 2s)")
 
 if __name__ == '__main__':

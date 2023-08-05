@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rdp.rc4 module
+unit test for rdpy3.protocol.rdp.rc4 module
 """
 
 import os, sys

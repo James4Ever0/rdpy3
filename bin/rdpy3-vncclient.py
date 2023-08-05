@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -52,7 +52,7 @@ class RFBClientQtFactory(rfb.ClientFactory):
         client = RFBClientQt(controller)
         #create qt widget
         self._w = client.getWidget()
-        self._w.setWindowTitle('rdpy-vncclient')
+        self._w.setWindowTitle('rdpy3-vncclient')
         self._w.show()
         return client
         

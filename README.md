@@ -116,7 +116,7 @@ $ rdpy3-rssplayer.py rss_file_path
 
 ## RDPY Qt Widget
 
-RDPY can also be used as Qt widget through rdpy.ui.qt5.QRemoteDesktop class. It can be embedded in your own Qt application. qt5reactor must be used in your app for Twisted and Qt to work together. For more details, see sources of rdpy3-rdpclient.
+RDPY can also be used as Qt widget through rdpy3.ui.qt5.QRemoteDesktop class. It can be embedded in your own Qt application. qt5reactor must be used in your app for Twisted and Qt to work together. For more details, see sources of rdpy3-rdpclient.
 
 ## RDPY library
 

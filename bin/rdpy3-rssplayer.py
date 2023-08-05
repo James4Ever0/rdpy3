@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -70,7 +70,7 @@ class RssPlayerWindow(QtGui.QWidget):
         self.setGeometry(0, 0, 800, 600)
 
 def help():
-    print "Usage: rdpy-rssplayer [-h] rss_filepath"
+    print "Usage: rdpy3-rssplayer [-h] rss_filepath"
 
 def start(widget, rssFile):
     loop(widget, rssFile, rssFile.nextEvent())

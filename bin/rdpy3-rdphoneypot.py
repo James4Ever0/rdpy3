@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -141,7 +141,7 @@ def help():
     @summary: Print help in console
     """
     print("""
-    Usage:  rdpy-rdphoneypot.py 
+    Usage:  rdpy3-rdphoneypot.py 
             [-L logfile]
             [-l listen_port default 3389] 
             [-k private_key_file_path (mandatory for SSL)] 

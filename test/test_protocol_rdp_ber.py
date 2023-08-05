@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rdp.ber module
+unit test for rdpy3.protocol.rdp.ber module
 """
 
 import os, sys

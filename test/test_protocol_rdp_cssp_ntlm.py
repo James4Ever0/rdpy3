@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rdp.nla.cssp and ntlm module
+unit test for rdpy3.protocol.rdp.nla.cssp and ntlm module
 """
 import unittest
 import os, sys

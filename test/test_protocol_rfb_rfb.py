@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rfb.rfb module
+unit test for rdpy3.protocol.rfb.rfb module
 """
 
 import os, sys

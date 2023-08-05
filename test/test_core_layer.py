@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.network.layer module
+unit test for rdpy3.network.layer module
 """
 
 import os, sys
@@ -31,7 +31,7 @@ import rdpy3.core.layer
 class LayerTest(unittest.TestCase):
     """
     @summary:  represent test case for all classes and function
-                present in rdpy.core.layer
+                present in rdpy3.core.layer
     """
     
     class LayerCaseException(Exception):
@@ -44,17 +44,17 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test if connect event is send from transport to presentation
         """
-        class TestConnect(rdpy.core.layer.Layer):
+        class TestConnect(rdpy3.core.layer.Layer):
             def connect(self):
                 raise LayerTest.LayerCaseException()
             
-        self.assertRaises(LayerTest.LayerCaseException, rdpy.core.layer.Layer(presentation = TestConnect()).connect)
+        self.assertRaises(LayerTest.LayerCaseException, rdpy3.core.layer.Layer(presentation = TestConnect()).connect)
         
     def test_layer_automata_more_than_expected(self):
         """
         @summary: test layer automata mechanism if data received is more than expected
         """
-        class TestAutomata(rdpy.core.layer.RawLayer):
+        class TestAutomata(rdpy3.core.layer.RawLayer):
             def expectedCallBack(self, data):
                 if data.dataLen() == 4:
                     raise LayerTest.LayerCaseException()
@@ -67,7 +67,7 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test layer automata mechanism
         """
-        class TestAutomata(rdpy.core.layer.RawLayer):
+        class TestAutomata(rdpy3.core.layer.RawLayer):
             def expectedCallBack(self, data):
                 if data.dataLen() == 4:
                     raise LayerTest.LayerCaseException()

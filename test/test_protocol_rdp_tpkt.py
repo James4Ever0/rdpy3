@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy.protocol.rdp.tpkt module
+unit test for rdpy3.protocol.rdp.tpkt module
 """
 
 import os, sys

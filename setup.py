@@ -4,9 +4,10 @@ import setuptools
 from distutils.core import setup, Extension
 
 setup(name='rdpy3',
-      version='1.3.3',
-      description='Remote Desktop Protocol in Python',
+      version='1.3.7',
+      description='Remote Desktop Protocol in Python3',
       long_description_content_type="text/markdown",
+      python_requires=">=3",
       long_description=open("README.md").read(),
       # long_description="""
       # RDPY is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (Client and Server side). RDPY is built over the event driven network engine Twisted.

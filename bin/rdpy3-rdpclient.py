@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -139,7 +139,7 @@ class RDPClientQtFactory(rdp.ClientFactory):
             self._client = RDPClientQtRecorder(controller, self._width, self._height, rss.createRecorder(self._recodedPath))
         #create qt widget
         self._w = self._client.getWidget()
-        self._w.setWindowTitle('rdpy-rdpclient')
+        self._w.setWindowTitle('rdpy3-rdpclient')
         if self._fullscreen:
             self._w.showFullScreen()
         else:
@@ -212,7 +212,7 @@ def autoDetectKeyboardLayout():
         
 def help():
     print ("""
-    Usage: rdpy-rdpclient [options] ip[:port]"
+    Usage: rdpy3-rdpclient [options] ip[:port]"
     \t-u: user name
     \t-p: password
     \t-d: domain

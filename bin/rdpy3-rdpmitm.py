@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
@@ -21,7 +21,7 @@
 """
 RDP proxy with Man in the middle capabilities
 Save RDP events in output RSR file format
-RSR file format can be read by rdpy-rsrplayer.py
+RSR file format can be read by rdpy3-rsrplayer.py
                ----------------------------
 Client RDP -> | ProxyServer | ProxyClient | -> Server RDP
               ----------------------------
