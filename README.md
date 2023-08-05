@@ -125,7 +125,7 @@ In a nutshell RDPY can be used as a protocol library with a twisted engine.
 ### Simple RDP Client
 
 ```python
-from rdpy.protocol.rdp import rdp
+from rdpy3.protocol.rdp import rdp
 
 class MyRDPFactory(rdp.ClientFactory):
 
@@ -181,7 +181,7 @@ reactor.run()
 
 ### Simple RDP Server
 ```python
-from rdpy.protocol.rdp import rdp
+from rdpy3.protocol.rdp import rdp
 
 class MyRDPFactory(rdp.ServerFactory):
 
@@ -236,7 +236,7 @@ reactor.run()
 
 ### Simple VNC Client
 ```python
-from rdpy.protocol.rfb import rfb
+from rdpy3.protocol.rfb import rfb
 
 class MyRFBFactory(rfb.ClientFactory):
 
