@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-import os
 import setuptools
 from distutils.core import setup, Extension
-version = '1.3.9'
+version = '1.4.0'
 packageName = 'rdpy3'
-dist = os.listdir("dist")
-vernos = []
-for fname in dist:
-    if fname.endswith(suffix := ".tar.gz"):
-        verno = fname.strip(packageName+"-").strip(suffix)
-        vernos.append(verno)
-if version in vernos:
-    raise Exception(
-        f"{version} is not latest version!\nPrevious versions: {', '.join(vernos)}")
+
+# import os
+# dist = os.listdir("dist")
+# vernos = []
+# for fname in dist:
+#     if fname.endswith(suffix := ".tar.gz"):
+#         verno = fname.strip(packageName+"-").strip(suffix)
+#         vernos.append(verno)
+# if version in vernos:
+#     raise Exception(
+#         f"{version} is not latest version!\nPrevious versions: {', '.join(vernos)}")
+
 setup(name=packageName,
       version=version,
       description='Remote Desktop Protocol in Python3',
@@ -52,7 +54,7 @@ setup(name=packageName,
       ],
       install_requires=[
           'twisted',
-          'pyopenssl',
+          'pyopenssl>=23.2.0',
           'service_identity',
           'qt5reactor',
           'rsa',
