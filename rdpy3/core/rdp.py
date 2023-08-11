@@ -60,7 +60,7 @@ class RDPClientController(PDUClientListener):
         #transport pdu layer
         self._x224Layer = x224.Client(self._mcsLayer)
         #transport packet (protocol layer)
-        self._tpktLayer = tpkt.Tpkt(self._x224Layer)
+        self._tpktLayer = tpkt.TPKT(self._x224Layer)
         #fastpath stack
         self._pduLayer.initFastPath(self._secLayer)
         self._secLayer.initFastPath(self._tpktLayer)
@@ -393,7 +393,7 @@ class RDPServerController(PDUServerListener):
         #transport pdu layer
         self._x224Layer = x224.Server(self._mcsLayer, privateKeyFileName, certificateFileName, False)
         #transport packet (protocol layer)
-        self._tpktLayer = tpkt.Tpkt(self._x224Layer)
+        self._tpktLayer = tpkt.TPKT(self._x224Layer)
         
         #fastpath stack
         self._pduLayer.initFastPath(self._secLayer)

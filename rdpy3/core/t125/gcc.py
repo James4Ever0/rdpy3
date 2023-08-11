@@ -380,7 +380,7 @@ class ProprietaryServerCertificate(CompositeType):
         s.write_type(self.wPublicKeyBlobLen)
         s.write_type(self.PublicKeyBlob)
     
-        md5Digest = md5.new()
+        md5Digest = md5()
         md5Digest.update(s.getvalue())
         
         return md5Digest.digest() + "\x00" + "\xff" * 45 + "\x01"

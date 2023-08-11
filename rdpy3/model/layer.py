@@ -180,7 +180,7 @@ class RawLayer(asyncio.Protocol, LayerAutomata, IStreamSender):
         #call parent automata
         LayerAutomata.__init__(self, presentation)
         #data buffer received from twisted network layer
-        self._buffer = ""
+        self._buffer = b""
         #len of next packet pass to next state function
         self._expectedLen = 0
         self._factory = None
@@ -201,10 +201,12 @@ class RawLayer(asyncio.Protocol, LayerAutomata, IStreamSender):
         #add in buffer
         self._buffer += data
         #while buffer have expected size call local callback
+        # print("EXPECTED LEN:", self._expectedLen)
         while self._expectedLen > 0 and len(self._buffer) >= self._expectedLen:
             #expected data is first expected bytes
             expectedData = Stream(self._buffer[0:self._expectedLen])
             #rest is for next event of automata
+            # print("EXPECTED DATA:", expectedData)
             self._buffer = self._buffer[self._expectedLen:]
             #call recv function
             self.recv(expectedData)

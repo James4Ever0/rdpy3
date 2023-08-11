@@ -36,13 +36,13 @@ class RC4Test(unittest.TestCase):
     """
 
     def test_rc4_key_plaintext(self):
-        self.assertEqual("\xBB\xF3\x16\xE8\xD9\x40\xAF\x0A\xD3", rc4.crypt(rc4.RC4Key("Key"), "Plaintext"), "RC4 bad crypt")
-        self.assertEqual("Plaintext", rc4.crypt(rc4.RC4Key("Key"), "\xBB\xF3\x16\xE8\xD9\x40\xAF\x0A\xD3"), "RC4 bad crypt")
+        self.assertEqual(b"\xBB\xF3\x16\xE8\xD9\x40\xAF\x0A\xD3", rc4.crypt(rc4.RC4Key("Key"), "Plaintext"), "RC4 bad crypt")
+        self.assertEqual(b"Plaintext", rc4.crypt(rc4.RC4Key("Key"), "\xBB\xF3\x16\xE8\xD9\x40\xAF\x0A\xD3"), "RC4 bad crypt")
         
     def test_rc4_wiki_pedia(self):
-        self.assertEqual("\x10\x21\xBF\x04\x20", rc4.crypt(rc4.RC4Key("Wiki"), "pedia"), "RC4 bad crypt")
-        self.assertEqual("pedia", rc4.crypt(rc4.RC4Key("Wiki"), "\x10\x21\xBF\x04\x20"), "RC4 bad crypt")
+        self.assertEqual(b"\x10\x21\xBF\x04\x20", rc4.crypt(rc4.RC4Key("Wiki"), "pedia"), "RC4 bad crypt")
+        self.assertEqual(b"pedia", rc4.crypt(rc4.RC4Key("Wiki"), "\x10\x21\xBF\x04\x20"), "RC4 bad crypt")
         
     def test_rc4_secret_attack_at_down(self):
-        self.assertEqual("\x45\xA0\x1F\x64\x5F\xC3\x5B\x38\x35\x52\x54\x4B\x9B\xF5", rc4.crypt(rc4.RC4Key("Secret"), "Attack at dawn"), "RC4 bad crypt")
-        self.assertEqual("Attack at dawn", rc4.crypt(rc4.RC4Key("Secret"), "\x45\xA0\x1F\x64\x5F\xC3\x5B\x38\x35\x52\x54\x4B\x9B\xF5"), "RC4 bad crypt")
+        self.assertEqual(b"\x45\xA0\x1F\x64\x5F\xC3\x5B\x38\x35\x52\x54\x4B\x9B\xF5", rc4.crypt(rc4.RC4Key("Secret"), "Attack at dawn"), "RC4 bad crypt")
+        self.assertEqual(b"Attack at dawn", rc4.crypt(rc4.RC4Key("Secret"), "\x45\xA0\x1F\x64\x5F\xC3\x5B\x38\x35\x52\x54\x4B\x9B\xF5"), "RC4 bad crypt")

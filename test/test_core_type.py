@@ -39,6 +39,7 @@ class TypeTest(unittest.TestCase):
         @summary: test if callable value with const ctor doesn't change value
         """
         c = rdpy3.model.message.CallableValue(5)
+        print("CallableValue:", c.value)
         self.assertEqual(c.value, 5, "invalid callable const")
         
     def test_callable_value_lambda(self):
@@ -139,7 +140,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt8(1))
-        self.assertEqual(''.join(s.buflist), '\x01', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x01', "invalid stream write")
         
     def test_stream_write_uint16Le_type(self):
         """
@@ -147,7 +148,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt16Le(1))
-        self.assertEqual(''.join(s.buflist), '\x01\x00', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x01\x00', "invalid stream write")
     
     def test_stream_write_uint16Be_type(self):
         """
@@ -155,7 +156,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt16Be(1))
-        self.assertEqual(''.join(s.buflist), '\x00\x01', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x00\x01', "invalid stream write")
         
     def test_stream_write_uint24Le_type(self):
         """
@@ -163,7 +164,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt24Le(1))
-        self.assertEqual(''.join(s.buflist), '\x01\x00\x00', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x01\x00\x00', "invalid stream write")
     
     def test_stream_write_uint24Be_type(self):
         """
@@ -171,7 +172,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt24Be(1))
-        self.assertEqual(''.join(s.buflist), '\x00\x00\x01', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x00\x00\x01', "invalid stream write")
         
     def test_stream_write_uint32Le_type(self):
         """
@@ -179,7 +180,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt32Le(1))
-        self.assertEqual(''.join(s.buflist), '\x01\x00\x00\x00', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x01\x00\x00\x00', "invalid stream write")
     
     def test_stream_write_uint32Be_type(self):
         """
@@ -187,7 +188,7 @@ class TypeTest(unittest.TestCase):
         """
         s = rdpy3.model.message.Stream()
         s.write_type(rdpy3.model.message.UInt32Be(1))
-        self.assertEqual(''.join(s.buflist), '\x00\x00\x00\x01', "invalid stream write")
+        self.assertEqual(s.getvalue(), b'\x00\x00\x00\x01', "invalid stream write")
         
     def test_stream_read_uint8_type(self):
         """

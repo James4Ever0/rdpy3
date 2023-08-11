@@ -232,3 +232,132 @@ class Tpkt(RawLayer, IFastPathSender):
         tpkt = await self.start_tls()
         await cssp.connect(tpkt.reader, tpkt.writer, authentication_protocol)
         return tpkt
+
+
+class TPKT(RawLayer, IFastPathSender):
+    """
+    @summary:  TPKT layer in RDP protocol stack
+                represent the Raw Layer in stack (first layer)
+                This layer only handle size of packet and determine if is a fast path packet
+    """
+    def __init__(self, presentation):
+        """
+        @param presentation: {Layer} presentation layer, in RDP case is x224 layer
+        """
+        RawLayer.__init__(self, presentation)
+        #length may be coded on more than 1 bytes
+        self._lastShortLength = UInt8()
+        #fast path listener
+        self._fastPathListener = None
+        #last secure flag
+        self._secFlag = 0
+            
+    def setFastPathListener(self, fastPathListener):
+        """
+        @param fastPathListener : {IFastPathListener}
+        @note: implement IFastPathSender
+        """
+        self._fastPathListener = fastPathListener
+        
+    def connect(self):
+        """
+        @summary:  Call when transport layer connection
+                    is made (inherit from RawLayer)
+        """
+        #header is on two bytes
+        self.expect(2, self.readHeader)
+        #no connection automata on this layer
+        if not self._presentation is None:
+            self._presentation.connect()
+        
+    def readHeader(self, data):
+        """
+        @summary: Read header of TPKT packet
+        @param data: {Stream} received from twisted layer
+        """
+        #first read packet version
+        version = UInt8()
+        data.readType(version)
+        #classic packet
+        if version.value == Action.FASTPATH_ACTION_X224:
+            #padding
+            data.readType(UInt8())
+            #read end header
+            self.expect(2, self.readExtendedHeader)
+        else:
+            #is fast path packet
+            self._secFlag = ((version.value >> 6) & 0x3)
+            data.readType(self._lastShortLength)
+            if self._lastShortLength.value & 0x80:
+                #size is 1 byte more
+                self.expect(1, self.readExtendedFastPathHeader)
+                return
+            self.expect(self._lastShortLength.value - 2, self.readFastPath)
+                
+        
+    def readExtendedHeader(self, data):
+        """
+        @summary: Header may be on 4 bytes
+        @param data: {Stream} from twisted layer
+        """
+        #next state is read data
+        size = UInt16Be()
+        data.readType(size)
+        self.expect(size.value - 4, self.readData)
+    
+    def readExtendedFastPathHeader(self, data):
+        """
+        @summary: Fast path header may be on 1 byte more
+        @param data: {Stream} from twisted layer
+        """
+        leftPart = UInt8()
+        data.readType(leftPart)
+        self._lastShortLength.value &= ~0x80
+        packetSize = (self._lastShortLength.value << 8) + leftPart.value
+        #next state is fast patn data
+        self.expect(packetSize - 3, self.readFastPath)
+    
+    def readFastPath(self, data):
+        """
+        @summary: Fast path data
+        @param data: {Stream} from twisted layer
+        """
+        self._fastPathListener.recvFastPath(self._secFlag, data)
+        self.expect(2, self.readHeader)
+    
+    def readData(self, data):
+        """
+        @summary: Read classic TPKT packet, last state in tpkt automata
+        @param data: {Stream} with correct size
+        """
+        #next state is pass to 
+        self._presentation.recv(data)
+        self.expect(2, self.readHeader)
+        
+    def send(self, message):
+        """
+        @summary: Send encompassed data
+        @param message: {network.Type} message to send
+        """
+        RawLayer.send(self, (UInt8(Action.FASTPATH_ACTION_X224), UInt8(0), UInt16Be(sizeof(message) + 4), message))
+        
+    def sendFastPath(self, secFlag, fastPathS):
+        """
+        @param fastPathS: {Type | Tuple} type transform to stream and send as fastpath
+        @param secFlag: {integer} Security flag for fastpath packet
+        """
+        RawLayer.send(self, (UInt8(Action.FASTPATH_ACTION_FASTPATH | ((secFlag & 0x3) << 6)), UInt16Be((sizeof(fastPathS) + 3) | 0x8000), fastPathS))
+    
+    def startTLS(self, sslContext):
+        """
+        @summary: start TLS protocol
+        @param sslContext: {ssl.ClientContextFactory | ssl.DefaultOpenSSLContextFactory} context use for TLS protocol
+        """
+        self.transport.startTLS(sslContext)
+       
+    def startNLA(self, sslContext, callback):
+        """
+        @summary: use to start NLA (NTLM over SSL) protocol
+                    must be called after startTLS function
+        """
+        self.transport.startNLA(sslContext, callback)

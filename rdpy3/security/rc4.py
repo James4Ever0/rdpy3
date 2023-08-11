@@ -27,16 +27,25 @@ def KSA(key):
     S = list(range(256))
 
     j = 0
+    # print("KEY:", key)
     for i in range(256):
-        j = (j + S[i] + key[i % keylength]) % 256
+        # print(S[i], key[i % keylength])
+        k = key[i % keylength]
+        if isinstance(k, str):
+            k = ord(k)
+        elif not isinstance(k, int):
+            raise TypeError("Key must be a string or a list of integers")
+        j = (j + S[i] + k) % 256
         S[i], S[j] = S[j], S[i]  # swap
-
     return S
+    # for s in S:
+    #     yield s
 
 
 def PRGA(S):
     i = 0
     j = 0
+    # S = list(S)
     while True:
         i = (i + 1) % 256
         j = (j + S[i]) % 256
@@ -56,4 +65,9 @@ def RC4Key(key):
 
 
 def crypt(keystream, plaintext: bytes) -> bytes:
-    return bytes([c ^ next(keystream) for c in plaintext])
+    # print("KEYSTREAM?", keystream)
+    # if keystream == "RC4 bad crypt": return keystream
+    # try:
+    return bytes([(c if isinstance(c, int) else ord(c)) ^ next(keystream) for c in plaintext])
+    # except:
+    #     return "RC4 bad crypt"

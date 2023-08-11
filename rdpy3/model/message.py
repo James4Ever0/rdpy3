@@ -98,6 +98,8 @@ class Message:
         old = deepcopy(self)
         self.__read__(s)
         # check constant value
+        if isinstance(old.value, str):
+            old.value = old.value.encode()
         if old != self:
             # rollback read value
             s.seek(-sizeof(self), 1)
@@ -161,10 +163,70 @@ class DynMessage(Message):
             value_callable = value
 
         self._value = value_callable
+    
+    def __call__(self):
+        return self.value
 
     value = property(get_value, set_value)
 
-CallableValue = DynMessage
+# CallableValue = DynMessage
+
+class CallableValue(object):
+    """
+    @summary:  Expression evaluate when is get or set
+                Ex: Type contain length of array and array
+                To know the size of array you need to read 
+                length field before. At ctor time no length was read.
+                You need a callable object that will be evaluate when it will be used
+    """
+    def __init__(self, value):
+        """
+        @param value: value will be wrapped (raw python type  | lambda | function)
+        """
+        self._value = None
+        self.value = value
+    
+    def __getValue__(self):
+        """
+        @summary:  Call when value is get -> Evaluate inner expression
+                    Can be overwritten to add specific check before
+                    self.value is call
+        @return: value expression evaluated
+        """
+        return self._value()
+    
+    def __setValue__(self, value):
+        """
+        @summary:  Call when value is set
+                    Can be overwritten to add specific check before
+                    self.value = value is call
+        @param value: new value wrapped if constant -> lambda function
+        """
+        value_callable = lambda:value
+        if callable(value):
+            value_callable = value
+            
+        self._value = value_callable
+    
+    @property
+    def value(self):
+        """
+        @summary: Evaluate callable expression
+        @return: result of callable value
+        """
+        return self.__getValue__()
+    
+    @value.setter
+    def value(self, value):
+        """
+        @summary: Setter of value
+        @param value: new value encompass in value type object
+        """
+        self.__setValue__(value)
+    
+    def __call__(self):
+        return self.value
+
 
 class SimpleType(DynMessage):
     """
@@ -208,7 +270,7 @@ class SimpleType(DynMessage):
         @raise InvalidSize: if there is not enough data in stream
         """
         if s.data_len() < self._typeSize:
-            raise InvalidSize("Stream is too small to read expected SimpleType")
+            raise InvalidSize(f"Stream ({s.data_len()}) is too small to read expected SimpleType ({self._typeSize})")
         value = struct.unpack(self._structFormat, s.read(self._typeSize))[0]
 
         self.value = value
@@ -356,14 +418,14 @@ class SimpleType(DynMessage):
 class CompositeType(Message):
     """
     """
-    def __init__(self, read_len=None, conditional=lambda: True, optional=False, constant=False):
+    def __init__(self, read_len=None, conditional=lambda: True, optional=False, constant=False, readLen=None):
         """
         """
         super().__init__(conditional=conditional, optional=optional, constant=constant)
 
         # list of ordorred type
         self._type_name = []
-        self._read_len = read_len
+        self._read_len = read_len if read_len else readLen
 
     def __setattr__(self, name, value):
         """
@@ -624,7 +686,7 @@ class UInt24Be(SimpleType):
         @summary: special read for a special type
         @param s: Stream
         """
-        self.value = struct.unpack(self._structFormat, '\x00' + s.read(self._typeSize))[0]
+        self.value = struct.unpack(self._structFormat, b'\x00' + s.read(self._typeSize))[0]
 
 
 class UInt24Le(SimpleType):
@@ -663,12 +725,12 @@ class Buffer(DynMessage):
     """
     This a raw binary bytes data
     """
-    def __init__(self, value: bytes = b"", read_len=None, conditional=lambda:True, optional: bool = False, constant: bool = False, until: bytes = None):
+    def __init__(self, value: bytes = b"", read_len=None, conditional=lambda:True, optional: bool = False, constant: bool = False, until: bytes = None, readLen=None, unicode=False):
         """
         """
         super().__init__(conditional=conditional, optional=optional, constant=constant)
         # type use to know read length
-        self._read_len = read_len
+        self._read_len = read_len if read_len else readLen
         self._until = until
         self.value = value
 
@@ -700,6 +762,8 @@ class Buffer(DynMessage):
 
         if not self._until is None:
             to_write += self._until
+        if isinstance(to_write, str):
+            to_write = to_write.encode('utf-8')
         s.write(to_write)
 
     def __read__(self, s):
@@ -752,24 +816,41 @@ class Stream(BytesIO):
     @summary:  Stream use to read all types
     """
     def __init__(self, initial_bytes = ...):
+        # print('initial_bytes:', repr(initial_bytes)) # '\x00\x00\x00\x00'
         if isinstance(initial_bytes, str):
-            initial_bytes = bytes(initial_bytes, 'utf-8')
-        elif isinstance(initial_bytes, ...):
-            super(Stream, self).__init__()
+            initial_bytes = initial_bytes.encode('utf-8')
+
+        if initial_bytes is ...:
+            super().__init__()
         else:
-            super(Stream, self).__init__(initial_bytes)
+            super().__init__(initial_bytes)
+
+    # @property
+    # def buflist(self):
+    #     buflist = self.getvalue()
+    #     buflist = [bytes(e).decode() for e in buflist]
+    #     # print('buflist:', repr(buflist))
+    #     return buflist
+    
     def data_len(self) -> int:
         """
         :returns: not yet read length
         """
-        return len(self.getvalue()) - self.tell()
+        value_len = len(self.getvalue()) 
+        pos = self.tell()
+        # print('value len',value_len, 'pos', pos)
+        return value_len - pos
 
     def read_len(self) -> int:
         """
         Compute already read size
         :returns: read size of stream
         """
-        return self.seek()
+        # return self.seek()
+        return self.tell()
+    
+    def readType(self, value:Message):
+        return self.read_type(value)
 
     def read_type(self, value: Message):
         """
@@ -799,6 +880,14 @@ class Stream(BytesIO):
 
         value.read(self)
         return value
+    
+    def get_pos(self):
+        return self.tell()
+
+    def set_pos(self, pos):
+        self.seek(pos)
+    
+    pos = property(get_pos, set_pos)
 
     def readNextType(self, t):
         """
@@ -829,12 +918,12 @@ class ArrayType(Message):
     """
     @summary: Factory af n element
     """
-    def __init__(self, type_factory, init=None, read_len=None, conditional=lambda:True, optional=False, constant=False):
+    def __init__(self, type_factory, init=None, read_len=None, conditional=lambda:True, optional=False, constant=False, readLen = None):
         """
         """
         super().__init__(conditional, optional, constant)
         self._type_factory = type_factory
-        self._read_len = read_len
+        self._read_len = read_len if read_len else readLen
         self._array = init or []
 
     def __read__(self, s):
@@ -967,7 +1056,7 @@ class String(DynMessage):
         @param unicode: Encode and decode value as unicode
         @param until: read until sequence is readed or write sequence at the end of string
         """
-        super().__init__(self, conditional = conditional, optional = optional, constant = constant)
+        super().__init__(conditional = conditional, optional = optional, constant = constant)
         # Type.__init__(self, conditional = conditional, optional = optional, constant = constant)
         # CallableValue.__init__(self, value)
         #type use to know read length
@@ -1022,7 +1111,8 @@ class String(DynMessage):
         if self._unicode:
             s.write(encodeUnicode(self.value))
         else:
-            s.write(self.value)
+            val = self.value.encode() if isinstance(self.value, str) else self.value
+            s.write(val)
     
     def __read__(self, s):
         """

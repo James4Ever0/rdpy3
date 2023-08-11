@@ -94,7 +94,7 @@ class X224Test(unittest.TestCase):
                 t = x224.ConnectionRequestPDU()
                 s.read_type(t)
                 
-                if t.protocolNeg.code != x224.NegociationType.TYPE_RDP_NEG_REQ:
+                if t.protocolNeg.code != x224.NegotiationType.TYPE_RDP_NEG_REQ:
                     raise X224Test.X224_FAIL()
             
         def nextAutomata(data):
@@ -113,7 +113,7 @@ class X224Test(unittest.TestCase):
                     check negotiation failure
         """
         message = x224.ConnectionConfirmPDU()
-        message.protocolNeg.code.value = x224.NegociationType.TYPE_RDP_NEG_FAILURE
+        message.protocolNeg.code.value = x224.NegotiationType.TYPE_RDP_NEG_FAILURE
         s = type.Stream()
         s.write_type(message)
         s.pos = 0
@@ -167,7 +167,7 @@ class X224Test(unittest.TestCase):
             def send(self, data):
                 if not isinstance(data, x224.ConnectionConfirmPDU):
                     raise X224Test.X224_FAIL()
-                if data.protocolNeg.code.value != x224.NegociationType.TYPE_RDP_NEG_FAILURE or data.protocolNeg.failureCode.value != x224.NegotiationFailureCode.SSL_REQUIRED_BY_SERVER:
+                if data.protocolNeg.code.value != x224.NegotiationType.TYPE_RDP_NEG_FAILURE or data.protocolNeg.failureCode.value != x224.NegotiationFailureCode.SSL_REQUIRED_BY_SERVER:
                     raise X224Test.X224_FAIL()
             def close(self):
                 raise X224Test.X224_PASS()
@@ -206,7 +206,7 @@ class X224Test(unittest.TestCase):
             def send(self, data):
                 if not isinstance(data, x224.ConnectionConfirmPDU):
                     raise X224Test.X224_FAIL()
-                if data.protocolNeg.code.value != x224.NegociationType.TYPE_RDP_NEG_RSP or data.protocolNeg.selectedProtocol.value != x224.Protocols.PROTOCOL_SSL: 
+                if data.protocolNeg.code.value != x224.NegotiationType.TYPE_RDP_NEG_RSP or data.protocolNeg.selectedProtocol.value != x224.Protocols.PROTOCOL_SSL: 
                     raise X224Test.X224_FAIL()
                 
         class Presentation(object):

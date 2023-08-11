@@ -28,9 +28,10 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import unittest
 from rdpy3.core import lic, sec
 import rdpy3.model.message as type
+import codecs
 
 #dump of server request
-SERVERREQUEST = """
+SERVERREQUEST = b"""
 AQNfCBkr6c1CVLRPx7PPYVgzW5uMQ1pSvtzs9XlTt74jwjslAAAGACwAAABNAGkAYwByAG8AcwBv
 AGYAdAAgAEMAbwByAHAAbwByAGEAdABpAG8AbgAAAAgAAABBADAAMgAAAA0ABAABAAAAAwDZBwIA
 AAACAAAAWAMAADCCA1QwggJAoAMCAQICCAGemF/kFo3QMAkGBSsOAwIdBQAwODE2MBUGA1UEBx4O
@@ -124,6 +125,6 @@ class TestLic(unittest.TestCase):
         t = Transport()
         l = lic.LicenseManager(t)
         
-        s = type.Stream(SERVERREQUEST.decode("base64"))
+        s = type.Stream(codecs.decode(SERVERREQUEST, "base64"))
         
         self.assertFalse(l.recv(s) and t._state, "Bad message after license request")

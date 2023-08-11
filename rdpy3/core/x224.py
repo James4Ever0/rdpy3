@@ -42,7 +42,7 @@ class MessageType:
     X224_TPDU_ERROR = 0x70
 
 
-class NegociationType:
+class NegotiationType:
     """
     @summary: Negotiation header
     """
@@ -128,8 +128,8 @@ class Negotiation(CompositeType):
         self.flag = UInt8(0)
         #always 8
         self.len = UInt16Le(0x0008, constant = True)
-        self.selectedProtocol = UInt32Le(conditional = lambda: (self.code.value != NegociationType.TYPE_RDP_NEG_FAILURE))
-        self.failureCode = UInt32Le(conditional = lambda: (self.code.value == NegociationType.TYPE_RDP_NEG_FAILURE))
+        self.selectedProtocol = UInt32Le(conditional = lambda: (self.code.value != NegotiationType.TYPE_RDP_NEG_FAILURE))
+        self.failureCode = UInt32Le(conditional = lambda: (self.code.value == NegotiationType.TYPE_RDP_NEG_FAILURE))
 
 
 class X224:
@@ -169,7 +169,7 @@ async def connect(tpkt: tpkt.Tpkt, authentication_protocol: sspi.IAuthentication
     :see: http://msdn.microsoft.com/en-us/library/cc240500.aspx
     """
     request = ConnectionRequestPDU()
-    request.protocolNeg.code.value = NegociationType.TYPE_RDP_NEG_REQ
+    request.protocolNeg.code.value = NegotiationType.TYPE_RDP_NEG_REQ
     request.protocolNeg.selectedProtocol.value = Protocols.PROTOCOL_HYBRID | Protocols.PROTOCOL_SSL
     await tpkt.write(request)
 
@@ -266,6 +266,21 @@ class ClientTLSContext(ssl.ClientContextFactory):
         context.set_options(SSL.OP_TLS_BLOCK_PADDING_BUG)
         return context
     
+class ServerTLSContext(ssl.DefaultOpenSSLContextFactory):
+    """
+    @summary: Server context factory for open ssl
+    @param privateKeyFileName: Name of a file containing a private key
+    @param certificateFileName: Name of a file containing a certificate
+    """
+    def __init__(self, privateKeyFileName, certificateFileName):
+        class TPDUSSLContext(SSL.Context):
+            def __init__(self, method):
+                SSL.Context.__init__(self, method)
+                self.set_options(SSL.OP_DONT_INSERT_EMPTY_FRAGMENTS)
+                self.set_options(SSL.OP_TLS_BLOCK_PADDING_BUG)
+
+        ssl.DefaultOpenSSLContextFactory.__init__(self, privateKeyFileName, certificateFileName, SSL.SSLv23_METHOD, TPDUSSLContext)
+        
 
 class Client(X224Layer):
 # class Client(X224Layer):
@@ -291,7 +306,7 @@ class Client(X224Layer):
         @see: http://msdn.microsoft.com/en-us/library/cc240500.aspx
         """
         message = ClientConnectionRequestPDU()
-        message.protocolNeg.code.value = NegociationType.TYPE_RDP_NEG_REQ
+        message.protocolNeg.code.value = NegotiationType.TYPE_RDP_NEG_REQ
         message.protocolNeg.selectedProtocol.value = self._requestedProtocol
         self._transport.send(message)
         self.setNextState(self.recvConnectionConfirm)
@@ -348,7 +363,8 @@ class Client(X224Layer):
 
 
 
-class Server(X224):
+class Server(X224Layer):
+# class Server(X224):
     """
     @summary: Server automata of X224 layer
     """
@@ -357,10 +373,10 @@ class Server(X224):
         @param presentation: {layer} upper layer, MCS layer in RDP case
         @param privateKeyFileName: {str} file contain server private key
         @param certficiateFileName: {str} file that contain public key
-        @param forceSSL: {boolean} reject old client that doerasn't support SSL
+        @param forceSSL: {boolean} reject old client that doesn't support SSL
         """
         X224Layer.__init__(self, presentation)
-        #Server mode informations for TLS connection
+        # Server mode informations for TLS connection
         self._serverPrivateKeyFileName = privateKeyFileName
         self._serverCertificateFileName = certificateFileName
         self._forceSSL = forceSSL and not self._serverPrivateKeyFileName is None and not self._serverCertificateFileName is None
@@ -397,7 +413,7 @@ class Server(X224):
             log.warning("server reject client because doesn't support SSL")
             #send error message and quit
             message = ConnectionConfirmPDU()
-            message.protocolNeg.code.value = NegociationType.TYPE_RDP_NEG_FAILURE
+            message.protocolNeg.code.value = NegotiationType.TYPE_RDP_NEG_FAILURE
             message.protocolNeg.failureCode.value = NegotiationFailureCode.SSL_REQUIRED_BY_SERVER
             self._transport.send(message)
             self.close()
@@ -413,13 +429,13 @@ class Server(X224):
         @see : http://msdn.microsoft.com/en-us/library/cc240501.aspx
         """
         message = ConnectionConfirmPDU()
-        message.protocolNeg.code.value = NegociationType.TYPE_RDP_NEG_RSP
+        message.protocolNeg.code.value = NegotiationType.TYPE_RDP_NEG_RSP
         message.protocolNeg.selectedProtocol.value = self._selectedProtocol
         self._transport.send(message)
         if self._selectedProtocol == Protocols.PROTOCOL_SSL:
             log.debug("*" * 10 + " select SSL layer " + "*" * 10)
             #_transport is TPKT and transport is TCP layer of twisted
-            #self._transport.startTLS(ServerTLSContext(self._serverPrivateKeyFileName, self._serverCertificateFileName))
+            self._transport.startTLS(ServerTLSContext(self._serverPrivateKeyFileName, self._serverCertificateFileName))
             
         #connection is done send to presentation
         self.setNextState(self.recvData)

@@ -49,7 +49,7 @@ class TPKTTest(unittest.TestCase):
             def connect(self):
                 raise TPKTTest.TPKT_PASS()
             
-        layer = tpkt.Tpkt(Presentation())
+        layer = tpkt.TPKT(Presentation())
         self.assertRaises(TPKTTest.TPKT_PASS, layer.connect)
         
     def test_tpkt_layer_recv(self):
@@ -68,7 +68,7 @@ class TPKTTest(unittest.TestCase):
         s = type.Stream()
         s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_X224), type.UInt8(), type.UInt16Be(type.sizeof(message) + 4), message))
         
-        layer = tpkt.Tpkt(Presentation())
+        layer = tpkt.TPKT(Presentation())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())
         
@@ -88,7 +88,7 @@ class TPKTTest(unittest.TestCase):
         s = type.Stream()
         s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt8(type.sizeof(message) + 2), message))
         
-        layer = tpkt.Tpkt(None)
+        layer = tpkt.TPKT(None)
         layer.initFastPath(FastPathLayer())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())
@@ -109,7 +109,7 @@ class TPKTTest(unittest.TestCase):
         s = type.Stream()
         s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt16Be((type.sizeof(message) + 3) | 0x8000), message))
         
-        layer = tpkt.Tpkt(None)
+        layer = tpkt.TPKT(None)
         layer.initFastPath(FastPathLayer())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())
