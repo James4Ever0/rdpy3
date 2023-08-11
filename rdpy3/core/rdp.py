@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -21,16 +21,19 @@
 Use to manage RDP stack in twisted
 """
 
-from rdpy3.core import layer
-from rdpy3.core.error import CallPureVirtualFuntion, InvalidValue
-import rdpy3.protocol.rdp.pdu as pdu
-import rdpy3.protocol.rdp.pdu.layer
-import rdpy3.protocol.rdp.pdu.data
-import rdpy3.protocol.rdp.pdu.caps
-import rdpy3.core.log as log
-import rdpy3.protocol.rdp.tpkt as tpkt, rdpy3.protocol.rdp.x224 as x224, rdpy3.protocol.rdp.sec as sec
-from rdpy3.protocol.rdp.t125 import mcs, gcc
-from rdpy3.protocol.rdp.nla import cssp, ntlm
+from rdpy3.model import layer
+from rdpy3.model.error import CallPureVirtualFuntion, InvalidValue
+from rdpy3.core.pdu.layer import PDUClientListener, PDUServerListener
+from rdpy3.core.pdu import data
+from rdpy3.core.pdu import caps
+from rdpy3.core.pdu import layer as pdu
+import rdpy3.model.log as log
+import rdpy3.core.tpkt as tpkt
+import rdpy3.core.x224 as x224
+import rdpy3.core.sec as sec
+from rdpy3.core.t125 import mcs, gcc
+from rdpy3.core.nla import cssp, ntlm
+
 
 class SecurityLevel(object):
     """
@@ -40,7 +43,8 @@ class SecurityLevel(object):
     RDP_LEVEL_SSL = 1
     RDP_LEVEL_NLA = 2
 
-class RDPClientController(pdu.layer.PDUClientListener):
+
+class RDPClientController(PDUClientListener):
     """
     Manage RDP stack as client
     """
@@ -48,7 +52,7 @@ class RDPClientController(pdu.layer.PDUClientListener):
         #list of observer
         self._clientObserver = []
         #PDU layer
-        self._pduLayer = pdu.layer.Client(self)
+        self._pduLayer = pdu.Client(self)
         #secure layer
         self._secLayer = sec.Client(self._pduLayer)
         #multi channel service
@@ -56,7 +60,7 @@ class RDPClientController(pdu.layer.PDUClientListener):
         #transport pdu layer
         self._x224Layer = x224.Client(self._mcsLayer)
         #transport packet (protocol layer)
-        self._tpktLayer = tpkt.TPKT(self._x224Layer)
+        self._tpktLayer = tpkt.Tpkt(self._x224Layer)
         #fastpath stack
         self._pduLayer.initFastPath(self._secLayer)
         self._secLayer.initFastPath(self._tpktLayer)
@@ -95,8 +99,8 @@ class RDPClientController(pdu.layer.PDUClientListener):
         @param height: height in pixel of screen
         """
         #set screen definition in MCS layer
-        self._mcsLayer._clientSettings.getBlock(gcc.MessageType.CS_CORE).desktopHeight.value = height
-        self._mcsLayer._clientSettings.getBlock(gcc.MessageType.CS_CORE).desktopWidth.value = width
+        self._mcsLayer._clientSettings.get_block(gcc.MessageType.CS_CORE).desktopHeight.value = height
+        self._mcsLayer._clientSettings.get_block(gcc.MessageType.CS_CORE).desktopWidth.value = width
         
     def setUsername(self, username):
         """
@@ -366,7 +370,8 @@ class RDPClientController(pdu.layer.PDUClientListener):
         """
         self._pduLayer.close()
 
-class RDPServerController(pdu.layer.PDUServerListener):
+
+class RDPServerController(PDUServerListener):
     """
     @summary: Controller use in server side mode
     """               
@@ -388,7 +393,7 @@ class RDPServerController(pdu.layer.PDUServerListener):
         #transport pdu layer
         self._x224Layer = x224.Server(self._mcsLayer, privateKeyFileName, certificateFileName, False)
         #transport packet (protocol layer)
-        self._tpktLayer = tpkt.TPKT(self._x224Layer)
+        self._tpktLayer = tpkt.Tpkt(self._x224Layer)
         
         #fastpath stack
         self._pduLayer.initFastPath(self._secLayer)
@@ -586,6 +591,7 @@ class ClientFactory(layer.RawLayerClientFactory):
         """
         raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "buildObserver", "ClientFactory"))
 
+
 class ServerFactory(layer.RawLayerServerFactory):
     """
     @summary: Factory of Server RDP protocol
@@ -599,7 +605,7 @@ class ServerFactory(layer.RawLayerServerFactory):
         self._colorDepth = colorDepth
         self._privateKeyFileName = privateKeyFileName
         self._certificateFileName = certificateFileName
-    
+
     def connectionLost(self, tpktLayer, reason):
         """
         @param reason: twisted reason
@@ -611,7 +617,7 @@ class ServerFactory(layer.RawLayerServerFactory):
         pduLayer = secLayer._presentation
         controller = pduLayer._listener
         controller.onClose()
-    
+
     def buildRawLayer(self, addr):
         """
         @summary: Function call from twisted and build rdp protocol stack
@@ -620,15 +626,15 @@ class ServerFactory(layer.RawLayerServerFactory):
         controller = RDPServerController(self._colorDepth, self._privateKeyFileName, self._certificateFileName)
         self.buildObserver(controller, addr)
         return controller.getProtocol()
-    
+
     def buildObserver(self, controller, addr):
         """
         @summary: Build observer use for connection
         @param controller: RDP stack controller
         @param addr: destination address
         """
-        raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "buildObserver", "ServerFactory")) 
-        
+        raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "buildObserver", "ServerFactory"))
+
 class RDPClientObserver(object):
     """
     @summary: Class use to inform all RDP event handle by RDPY

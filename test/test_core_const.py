@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -18,7 +18,7 @@
 #
 
 """
-unit test for rdpy3.core.const module
+unit test for rdpy3.model.const module
 """
 
 import os, sys
@@ -26,8 +26,8 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.core.const
-import rdpy3.core.type
+import rdpy3.model.const
+import rdpy3.model.message
 
 class ConstTest(unittest.TestCase):
     '''
@@ -38,19 +38,19 @@ class ConstTest(unittest.TestCase):
         '''
         test if type attributes decorator works
         '''
-        @rdpy3.core.const.TypeAttributes(rdpy3.core.type.UInt16Le)
+        @rdpy3.model.const.TypeAttributes(rdpy3.model.message.UInt16Le)
         class Test:
             MEMBER_1 = 1
             MEMBER_2 = 2
         
-        self.assertIsInstance(Test.MEMBER_1, rdpy3.core.type.UInt16Le, "MEMBER_1 is not in correct type")
-        self.assertIsInstance(Test.MEMBER_2, rdpy3.core.type.UInt16Le, "MEMBER_2 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_1, rdpy3.model.message.UInt16Le, "MEMBER_1 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_2, rdpy3.model.message.UInt16Le, "MEMBER_2 is not in correct type")
         
     def test_const(self):
         '''
         test if get on const class member generate new object each
         '''
-        @rdpy3.core.const.ConstAttributes
+        @rdpy3.model.const.ConstAttributes
         class Test:
             MEMBER_1 = 1
             MEMBER_2 = 2

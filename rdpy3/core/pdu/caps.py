@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -16,16 +16,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-from rdpy3.core.error import InvalidExpectedDataException
-import rdpy3.core.log as log
+from rdpy3.model.error import InvalidExpectedDataException
+import rdpy3.model.log as log
 
 """
 Definition of structure use for capabilities nego
 Use in PDU layer
 """
 
-from rdpy3.core.type import CompositeType, CallableValue, String, UInt8, UInt16Le, UInt32Le, sizeof, ArrayType, FactoryType
-    
+from rdpy3.model.message import CompositeType, CallableValue, Buffer, UInt8, UInt16Le, UInt32Le, sizeof, ArrayType, FactoryType
+
+
 class CapsType(object):
     """
     @summary: Different type of capabilities
@@ -240,7 +241,7 @@ class Capability(CompositeType):
                     return c(readLen = self.lengthCapability - 4)
             log.debug("unknown Capability type : %s"%hex(self.capabilitySetType.value))
             #read entire packet
-            return String(readLen = self.lengthCapability - 4)
+            return Buffer(readLen =self.lengthCapability - 4)
         
         if capability is None:
             capability = FactoryType(CapabilityFactory)
@@ -308,7 +309,7 @@ class OrderCapability(CompositeType):
     
     def __init__(self, readLen = None):
         CompositeType.__init__(self, readLen = readLen)
-        self.terminalDescriptor = String("\x00" * 16, readLen = CallableValue(16))
+        self.terminalDescriptor = Buffer("\x00" * 16, readLen = CallableValue(16))
         self.pad4octetsA = UInt32Le(0)
         self.desktopSaveXGranularity = UInt16Le(1)
         self.desktopSaveYGranularity = UInt16Le(20)
@@ -388,7 +389,7 @@ class InputCapability(CompositeType):
         #same value as gcc.ClientCoreSettings.keyboardFnKeys
         self.keyboardFunctionKey = UInt32Le()
         #same value as gcc.ClientCoreSettingrrs.imeFileName
-        self.imeFileName = String("\x00" * 64, readLen = CallableValue(64))
+        self.imeFileName = Buffer("\x00" * 64, readLen = CallableValue(64))
         
 class BrushCapability(CompositeType):
     """

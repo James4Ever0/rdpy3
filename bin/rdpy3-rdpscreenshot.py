@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -24,15 +24,13 @@ take screenshot of login page
 """
 
 import getopt
-import os
 import sys
 
-from PyQt5 import QtCore, QtGui
-from rdpy3.protocol.rdp import rdp
+from PyQt5 import QtGui
+from rdpy3.core import rdp
 from rdpy3.ui.qt5 import RDPBitmapToQtImage
-import rdpy3.core.log as log
-from rdpy3.core.error import RDPSecurityNegoFail
-from twisted.internet import task
+import rdpy3.model.log as log
+from rdpy3.model.error import RDPSecurityNegoFail
 
 # set log level
 log._LOG_LEVEL = log.Level.INFO
@@ -115,7 +113,7 @@ class RDPScreenShotFactory(rdp.ClientFactory):
                 @param reactor: twisted reactor
                 """
                 rdp.RDPClientObserver.__init__(self, controller)
-                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format.Format_RGB32)
                 self._path = path
                 self._timeout = timeout
                 self._startTimeout = False
@@ -170,7 +168,7 @@ def main(width, height, path, timeout, hosts):
     @return: {list(tuple(ip, port, Failure instance)} list of connection state
     """
     #create application
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QGuiApplication(sys.argv)
 
     #add qt5 reactor
     import qt5reactor

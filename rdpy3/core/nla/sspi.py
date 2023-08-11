@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -21,7 +21,7 @@
 @summary: security service provider interface (Microsoft)
 """
 
-from rdpy3.core.error import CallPureVirtualFuntion
+from rdpy3.model.error import CallPureVirtualFuntion
 
 class IAuthenticationProtocol(object):
     """

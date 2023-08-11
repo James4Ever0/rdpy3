@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -29,13 +29,12 @@ Client RDP -> | ProxyServer | ProxyClient | -> Server RDP
                    -----------------
 """
 
-import sys
 import os
 import argparse
 import time
 
-from rdpy3.core import log, error, rss
-from rdpy3.protocol.rdp import rdp
+from rdpy3.model import log, rss
+from rdpy3.core import rdp
 from twisted.internet import reactor
 
 log._LOG_LEVEL = log.Level.INFO

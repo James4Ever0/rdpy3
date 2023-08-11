@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -23,12 +23,13 @@ Implement the main graphic layer
 In this layer are managed all mains bitmap update orders end user inputs
 """
 
-from rdpy3.core.layer import LayerAutomata
-from rdpy3.core.error import CallPureVirtualFuntion
-from rdpy3.core.type import ArrayType
-import rdpy3.core.log as log
-import rdpy3.protocol.rdp.tpkt as tpkt
-import rdpy3.protocol.rdp.pdu.data, rdpy3.protocol.rdp.pdu.caps as caps
+from rdpy3.model.layer import LayerAutomata
+from rdpy3.model.error import CallPureVirtualFuntion
+from rdpy3.model.message import ArrayType
+import rdpy3.model.log as log
+from rdpy3.core import tpkt
+from rdpy3.core.pdu import data, caps
+
 
 class PDUClientListener(object):
     """
@@ -175,7 +176,7 @@ class Client(PDULayer):
         @param s: Stream
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DEMANDACTIVEPDU:
             #not a blocking error because in deactive reactive sequence 
@@ -203,7 +204,7 @@ class Client(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_SYNCHRONIZE:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -219,7 +220,7 @@ class Client(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_CONTROL or pdu.pduMessage.pduData.action.value != data.Action.CTRLACTION_COOPERATE:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -235,7 +236,7 @@ class Client(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_CONTROL or pdu.pduMessage.pduData.action.value != data.Action.CTRLACTION_GRANTED_CONTROL:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -251,7 +252,7 @@ class Client(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_FONTMAP:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -268,7 +269,7 @@ class Client(PDULayer):
         @param s: Stream from transport layer
         """
         pdus = ArrayType(data.PDU)
-        s.readType(pdus)
+        s.read_type(pdus)
         for pdu in pdus:
             if pdu.shareControlHeader.pduType.value == data.PDUType.PDUTYPE_DATAPDU:
                 self.readDataPDU(pdu.pduMessage)
@@ -286,7 +287,7 @@ class Client(PDULayer):
         @param secFlag: {SecFlags}
         """
         updates = ArrayType(data.FastPathUpdatePDU)
-        fastPathS.readType(updates)
+        fastPathS.read_type(updates)
         for update in updates:
             if update.updateHeader.value == data.FastPathUpdateType.FASTPATH_UPDATETYPE_BITMAP:
                 self._listener.onUpdate(update.updateData.rectangles._array)
@@ -301,7 +302,7 @@ class Client(PDULayer):
             if dataPDU.pduData.errorInfo.value == 0:
                 return
             errorMessage = "Unknown code %s"%hex(dataPDU.pduData.errorInfo.value)
-            if dataPDU.pduData.errorInfo in data.ErrorInfo._MESSAGES_: #.has_key(dataPDU.pduData.errorInfo):
+            if data.ErrorInfo._MESSAGES_.has_key(dataPDU.pduData.errorInfo):
                 errorMessage = data.ErrorInfo._MESSAGES_[dataPDU.pduData.errorInfo] 
             log.error("INFO PDU : %s"%errorMessage)
             
@@ -418,7 +419,7 @@ class Server(PDULayer):
         @param s: Stream
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_CONFIRMACTIVEPDU:
             #not a blocking error because in deactive reactive sequence 
@@ -444,7 +445,7 @@ class Server(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_SYNCHRONIZE:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -459,7 +460,7 @@ class Server(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_CONTROL or pdu.pduMessage.pduData.action.value != data.Action.CTRLACTION_COOPERATE:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -474,7 +475,7 @@ class Server(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_CONTROL or pdu.pduMessage.pduData.action.value != data.Action.CTRLACTION_REQUEST_CONTROL:
             #not a blocking error because in deactive reactive sequence 
             #input can be send too but ignored
@@ -490,7 +491,7 @@ class Server(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value != data.PDUType.PDUTYPE_DATAPDU or pdu.pduMessage.shareDataHeader.pduType2.value != data.PDUType2.PDUTYPE2_FONTLIST:
             #not a blocking error because in deactive reactive sequence 
             #input can be send but ignored
@@ -509,7 +510,7 @@ class Server(PDULayer):
         @param s: Stream from transport layer
         """
         pdu = data.PDU()
-        s.readType(pdu)
+        s.read_type(pdu)
         if pdu.shareControlHeader.pduType.value == data.PDUType.PDUTYPE_DATAPDU:
             self.readDataPDU(pdu.pduMessage)
             
@@ -520,7 +521,7 @@ class Server(PDULayer):
         """
         if dataPDU.shareDataHeader.pduType2.value == data.PDUType2.PDUTYPE2_SET_ERROR_INFO_PDU:
             errorMessage = "Unknown code %s"%hex(dataPDU.pduData.errorInfo.value)
-            if dataPDU.pduData.errorInfo in data.ErrorInfo._MESSAGES_: #.has_key(dataPDU.pduData.errorInfo):
+            if data.ErrorInfo._MESSAGES_.has_key(dataPDU.pduData.errorInfo):
                 errorMessage = data.ErrorInfo._MESSAGES_[dataPDU.pduData.errorInfo]
             log.error("INFO PDU : %s"%errorMessage)
             

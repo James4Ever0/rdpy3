@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -55,6 +55,6 @@ def scancodeToChar(code):
     @summary: try to convert native code to char code
     @return: char
     """
-    if not code in _SCANCODE_QWERTY_:#.has_key(code):
+    if not _SCANCODE_QWERTY_.has_key(code):
         return "<unknown scancode %x>"%code
     return _SCANCODE_QWERTY_[code];

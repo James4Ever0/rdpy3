@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -19,15 +19,15 @@
 #
 
 """
-example of use rdpy as VNC client
+example of use rdpy3 as VNC client
 """
 
 import sys, os, getopt
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtWidgets
 from rdpy3.ui.qt5 import RFBClientQt
 from rdpy3.protocol.rfb import rfb
 
-import rdpy3.core.log as log
+import rdpy3.model.log as log
 log._LOG_LEVEL = log.Level.INFO
         
 class RFBClientQtFactory(rfb.ClientFactory):
@@ -62,7 +62,7 @@ class RFBClientQtFactory(rfb.ClientFactory):
         @param connector: twisted connector use for vnc connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        QtGui.QMessageBox.warning(self._w, "Warning", "Lost connection : %s"%reason)
+        QtWidgets.QMessageBox.warning(self._w, "Warning", "Lost connection : %s"%reason)
         reactor.stop()
         app.exit()
         
@@ -72,7 +72,7 @@ class RFBClientQtFactory(rfb.ClientFactory):
         @param connector: twisted connector use for vnc connection (use reconnect to restart connection)
         @param reason: str use to advertise reason of lost connection
         """
-        QtGui.QMessageBox.warning(self._w, "Warning", "Connection failed : %s"%reason)
+        QtWidgets.QMessageBox.warning(self._w, "Warning", "Connection failed : %s"%reason)
         reactor.stop()
         app.exit()
         
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         ip, port = args[0], "5900"
         
     #create application
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QGuiApplication(sys.argv)
     
     #add qt5 reactor
     import qt5reactor

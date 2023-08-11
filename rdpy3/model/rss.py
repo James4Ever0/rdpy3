@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -22,8 +22,8 @@ Remote Session Scenario File format
 Private protocol format to save events
 """
 
-from rdpy3.core.type import CompositeType, FactoryType, UInt8, UInt16Le, UInt32Le, String, sizeof, Stream
-from rdpy3.core import log, error
+from rdpy3.model.message import CompositeType, FactoryType, UInt8, UInt16Le, UInt32Le, Buffer, sizeof, Stream
+from rdpy3.model import log, error
 import time
 
 class EventType(object):
@@ -63,7 +63,7 @@ class Event(CompositeType):
                     return c(readLen = self.length)
             log.debug("unknown event type : %s"%hex(self.type.value))
             #read entire packet
-            return String(readLen = self.length)
+            return Buffer(readLen = self.length)
         
         if event is None:
             event = FactoryType(EventFactory)
@@ -88,7 +88,7 @@ class UpdateEvent(CompositeType):
         self.bpp = UInt8()
         self.format = UInt8()
         self.length = UInt32Le(lambda:sizeof(self.data))
-        self.data = String(readLen = self.length)
+        self.data = Buffer(readLen = self.length)
         
 class InfoEvent(CompositeType):
     """
@@ -98,13 +98,13 @@ class InfoEvent(CompositeType):
     def __init__(self, readLen = None):
         CompositeType.__init__(self, readLen = readLen)
         self.lenUsername = UInt16Le(lambda:sizeof(self.username))
-        self.username = String(readLen = self.lenUsername)
+        self.username = Buffer(readLen = self.lenUsername)
         self.lenPassword = UInt16Le(lambda:sizeof(self.password))
-        self.password = String(readLen = self.lenPassword)
+        self.password = Buffer(readLen = self.lenPassword)
         self.lenDomain = UInt16Le(lambda:sizeof(self.domain))
-        self.domain = String(readLen = self.lenDomain)
+        self.domain = Buffer(readLen = self.lenDomain)
         self.lenHostname = UInt16Le(lambda:sizeof(self.hostname))
-        self.hostname = String(readLen = self.lenHostname)
+        self.hostname = Buffer(readLen = self.lenHostname)
         
 class ScreenEvent(CompositeType):
     """
@@ -177,7 +177,7 @@ class FileRecorder(object):
         self._lastEventTimer = now
         
         s = Stream()
-        s.writeType(e)
+        s.write_type(e)
         
         self._file.write(s.getvalue())
         
@@ -276,10 +276,10 @@ class FileReader(object):
         """
         @summary: read next event and return it
         """
-        if self._s.dataLen() == 0:
+        if self._s.data_len() == 0:
             return None
         e = Event()
-        self._s.readType(e)
+        self._s.read_type(e)
         return e
         
 def createRecorder(path):

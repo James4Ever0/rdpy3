@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -22,11 +22,11 @@
 @see: http://msdn.microsoft.com/en-us/library/cc241880.aspx
 """
 
-from rdpy3.core.type import CompositeType, CallableValue, UInt8, UInt16Le, UInt32Le, String, sizeof, FactoryType, ArrayType, Stream
-from rdpy3.core.error import InvalidExpectedDataException
-import rdpy3.core.log as log
-import rdpy3.protocol.rdp.sec
-from rdpy3.protocol.rdp.t125 import gcc
+from rdpy3.model.message import CompositeType, CallableValue, UInt8, UInt16Le, UInt32Le, Buffer, sizeof, FactoryType, ArrayType, Stream
+from rdpy3.model.error import InvalidExpectedDataException
+import rdpy3.model.log as log
+from rdpy3.core import sec
+from rdpy3.core.t125 import gcc
 from rdpy3.security import rc4
 from rdpy3.security import rsa_wrapper as rsa
 
@@ -102,7 +102,7 @@ class LicenseBinaryBlob(CompositeType):
         CompositeType.__init__(self, optional = optional)
         self.wBlobType = UInt16Le(blobType, constant = True if blobType != BinaryBlobType.BB_ANY_BLOB else False)
         self.wBlobLen = UInt16Le(lambda:sizeof(self.blobData))
-        self.blobData = String(readLen = self.wBlobLen)
+        self.blobData = Buffer(readLen = self.wBlobLen)
 
 class LicensingErrorMessage(CompositeType):
     """
@@ -127,10 +127,10 @@ class ProductInformation(CompositeType):
         self.dwVersion = UInt32Le()
         self.cbCompanyName = UInt32Le(lambda:sizeof(self.pbCompanyName))
         #may contain "Microsoft Corporation" from server microsoft
-        self.pbCompanyName = String("Microsoft Corporation", readLen = self.cbCompanyName, unicode = True)
+        self.pbCompanyName = Buffer("Microsoft Corporation", readLen = self.cbCompanyName, unicode = True)
         self.cbProductId = UInt32Le(lambda:sizeof(self.pbProductId))
         #may contain "A02" from microsoft license server
-        self.pbProductId = String("A02", readLen = self.cbProductId, unicode = True)
+        self.pbProductId = Buffer("A02", readLen = self.cbProductId, unicode = True)
 
 
 class Scope(CompositeType):
@@ -162,7 +162,7 @@ class ServerLicenseRequest(CompositeType):
     
     def __init__(self, readLen = None):
         CompositeType.__init__(self, readLen = readLen)
-        self.serverRandom = String("\x00" * 32, readLen = CallableValue(32))
+        self.serverRandom = Buffer("\x00" * 32, readLen = CallableValue(32))
         self.productInfo = ProductInformation()
         self.keyExchangeList = LicenseBinaryBlob(BinaryBlobType.BB_KEY_EXCHG_ALG_BLOB)
         self.serverCertificate = LicenseBinaryBlob(BinaryBlobType.BB_CERTIFICATE_BLOB)
@@ -183,7 +183,7 @@ class ClientNewLicenseRequest(CompositeType):
         #pure microsoft client ;-)
         #http://msdn.microsoft.com/en-us/library/1040af38-c733-4fb3-acd1-8db8cc979eda#id10
         self.platformId = UInt32Le(0x04000000 | 0x00010000)
-        self.clientRandom = String("\x00" * 32, readLen = CallableValue(32))
+        self.clientRandom = Buffer("\x00" * 32, readLen = CallableValue(32))
         self.encryptedPreMasterSecret = LicenseBinaryBlob(BinaryBlobType.BB_RANDOM_BLOB)
         self.ClientUserName = LicenseBinaryBlob(BinaryBlobType.BB_CLIENT_USER_NAME_BLOB)
         self.ClientMachineName = LicenseBinaryBlob(BinaryBlobType.BB_CLIENT_MACHINE_NAME_BLOB)
@@ -199,7 +199,7 @@ class ServerPlatformChallenge(CompositeType):
         CompositeType.__init__(self, readLen = readLen)
         self.connectFlags = UInt32Le()
         self.encryptedPlatformChallenge = LicenseBinaryBlob(BinaryBlobType.BB_ANY_BLOB)
-        self.MACData = String(readLen = CallableValue(16))
+        self.MACData = Buffer(readLen = CallableValue(16))
 
 class ClientPLatformChallengeResponse(CompositeType):
     """
@@ -212,7 +212,7 @@ class ClientPLatformChallengeResponse(CompositeType):
         CompositeType.__init__(self, readLen = readLen)
         self.encryptedPlatformChallengeResponse = LicenseBinaryBlob(BinaryBlobType.BB_DATA_BLOB)
         self.encryptedHWID = LicenseBinaryBlob(BinaryBlobType.BB_DATA_BLOB)
-        self.MACData = String(readLen = CallableValue(16))
+        self.MACData = Buffer(readLen = CallableValue(16))
 
 class LicPacket(CompositeType):
     """
@@ -234,7 +234,7 @@ class LicPacket(CompositeType):
                 if self.bMsgtype.value == c._MESSAGE_TYPE_:
                     return c(readLen = self.wMsgSize - 4)
             log.debug("unknown license message : %s"%self.bMsgtype.value)
-            return String(readLen = self.wMsgSize - 4)
+            return Buffer(readLen =self.wMsgSize - 4)
         
         if message is None:
             message = FactoryType(LicensingMessageFactory)
@@ -272,7 +272,7 @@ class LicenseManager(object):
         @return true when license automata is finish
         """            
         licPacket = LicPacket()
-        s.readType(licPacket)
+        s.read_type(licPacket)
         
         #end of automata
         if licPacket.bMsgtype.value == MessageType.ERROR_ALERT and licPacket.licensingMessage.dwErrorCode.value == ErrorCode.STATUS_VALID_CLIENT and licPacket.licensingMessage.dwStateTransition.value == StateTransition.ST_NO_TRANSITION:
@@ -308,7 +308,7 @@ class LicenseManager(object):
         else:
             s = Stream(licenseRequest.serverCertificate.blobData.value)
             serverCertificate = gcc.ServerCertificate()
-            s.readType(serverCertificate)
+            s.read_type(serverCertificate)
         
         #generate crypto values
         clientRandom = rsa.random(256)
@@ -340,7 +340,7 @@ class LicenseManager(object):
         
         #generate hwid
         s = Stream()
-        s.writeType((UInt32Le(2), String(self._hostname + self._username + "\x00" * 16)))
+        s.write_type((UInt32Le(2), Buffer(self._hostname + self._username + "\x00" * 16)))
         hwid = s.getvalue()[:20]
         
         message = ClientPLatformChallengeResponse()

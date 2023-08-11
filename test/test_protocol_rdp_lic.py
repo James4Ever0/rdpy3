@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -26,8 +26,8 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-from rdpy3.protocol.rdp import lic, sec
-import rdpy3.core.type as type
+from rdpy3.core import lic, sec
+import rdpy3.model.message as type
 
 #dump of server request
 SERVERREQUEST = """
@@ -91,7 +91,7 @@ class TestLic(unittest.TestCase):
     def test_valid_client_licensing_error_message(self):
         l = lic.LicenseManager(None)
         s = type.Stream()
-        s.writeType(lic.createValidClientLicensingErrorMessage())
+        s.write_type(lic.createValidClientLicensingErrorMessage())
         #reinit position
         s.pos = 0
         
@@ -105,9 +105,9 @@ class TestLic(unittest.TestCase):
                 if flag != sec.SecurityFlag.SEC_LICENSE_PKT:
                     return
                 s = type.Stream()
-                s.writeType(message)
+                s.write_type(message)
                 s.pos = 0
-                s.readType(lic.LicPacket(lic.ClientNewLicenseRequest()))
+                s.read_type(lic.LicPacket(lic.ClientNewLicenseRequest()))
                 self._state = True
             def getGCCServerSettings(self):
                 class A:

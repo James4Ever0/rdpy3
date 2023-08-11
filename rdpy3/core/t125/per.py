@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -21,8 +21,8 @@
 Per encoded function
 """
 
-from rdpy3.core.type import UInt8, UInt16Be, UInt32Be, String
-from rdpy3.core.error import InvalidValue, InvalidExpectedDataException
+from rdpy3.model.message import UInt8, UInt16Be, UInt32Be, Buffer
+from rdpy3.model.error import InvalidValue, InvalidExpectedDataException
 
 def readLength(s):
     """
@@ -31,12 +31,12 @@ def readLength(s):
     @return: int python
     """
     byte = UInt8()
-    s.readType(byte)
+    s.read_type(byte)
     size = 0
     if byte.value & 0x80:
         byte.value &= ~0x80
         size = byte.value << 8
-        s.readType(byte)
+        s.read_type(byte)
         size += byte.value
     else:
         size = byte.value
@@ -60,7 +60,7 @@ def readChoice(s):
     @return: int that represent choice
     """
     choice = UInt8()
-    s.readType(choice)
+    s.read_type(choice)
     return choice.value
 
 def writeChoice(choice):
@@ -78,7 +78,7 @@ def readSelection(s):
     @return: int that represent selection
     """
     choice = UInt8()
-    s.readType(choice)
+    s.read_type(choice)
     return choice.value
 
 def writeSelection(selection):
@@ -96,7 +96,7 @@ def readNumberOfSet(s):
     @return: int that represent numberOfSet
     """
     choice = UInt8()
-    s.readType(choice)
+    s.read_type(choice)
     return choice.value
 
 def writeNumberOfSet(numberOfSet):
@@ -114,7 +114,7 @@ def readEnumerates(s):
     @return: int that represent enumerate
     """
     choice = UInt8()
-    s.readType(choice)
+    s.read_type(choice)
     return choice.value
 
 def writeEnumerates(enumer):
@@ -142,7 +142,7 @@ def readInteger(s):
         result = UInt32Be()
     else:
         raise InvalidValue("invalid integer size %d"%size)
-    s.readType(result)
+    s.read_type(result)
     return result.value
 
 def writeInteger(value):
@@ -166,7 +166,7 @@ def readInteger16(s, minimum = 0):
     @return: int or long python value
     """
     result = UInt16Be()
-    s.readType(result)
+    s.read_type(result)
     return result.value + minimum
 
 def writeInteger16(value, minimum = 0):
@@ -190,16 +190,16 @@ def readObjectIdentifier(s, oid):
         raise InvalidValue("size of stream oid is wrong %d != 5"%size)
     a_oid = [0, 0, 0, 0, 0, 0]
     t12 = UInt8()
-    s.readType(t12)
+    s.read_type(t12)
     a_oid[0] = t12.value >> 4
     a_oid[1] = t12.value & 0x0f
-    s.readType(t12)
+    s.read_type(t12)
     a_oid[2] = t12.value
-    s.readType(t12)
+    s.read_type(t12)
     a_oid[3] = t12.value
-    s.readType(t12)
+    s.read_type(t12)
     a_oid[4] = t12.value
-    s.readType(t12)
+    s.read_type(t12)
     a_oid[5] = t12.value
     
     if list(oid) != a_oid:
@@ -223,12 +223,9 @@ def readNumericString(s, minValue):
     length = (length + minValue + 1) / 2
     s.read(length)
 
+
 def writeNumericString(nStr, minValue):
     """
-    @summary: write string in per format
-    @param str: python string to write
-    @param min: min value
-    @return: String type that contain str encoded in per format
     """
     length = len(nStr)
     mlength = minValue
@@ -238,9 +235,9 @@ def writeNumericString(nStr, minValue):
     result = []
     
     for i in range(0, length, 2):
-        c1 = ord(nStr[i])
+        c1 = nStr[i]
         if i + 1 < length:
-            c2 = ord(nStr[i + 1])
+            c2 = nStr[i + 1]
         else:
             c2 = 0x30
         c1 = (c1 - 0x30) % 10
@@ -248,7 +245,7 @@ def writeNumericString(nStr, minValue):
         
         result.append(UInt8((c1 << 4) | c2))
     
-    return (writeLength(mlength), tuple(result))
+    return writeLength(mlength), tuple(result)
 
 def readPadding(s, length):
     """
@@ -264,7 +261,7 @@ def writePadding(length):
     @param length: length of padding
     @return: String with \x00 * length
     """
-    return String("\x00"*length)
+    return Buffer(b"\x00" * length)
 
 def readOctetStream(s, octetStream, minValue = 0):
     """
@@ -276,11 +273,11 @@ def readOctetStream(s, octetStream, minValue = 0):
     """
     size = readLength(s) + minValue
     if size != len(octetStream):
-        raise InvalidValue("incompatible size %d != %d" % (len(octetStream), size))
+        raise InvalidValue("incompatible size %d != %d"%(len(octetStream), size))
     for i in range(0, size):
         c = UInt8()
-        s.readType(c)
-        if ord(octetStream[i]) != c.value:
+        s.read_type(c)
+        if octetStream[i] != c.value:
             return False
         
     return True
@@ -300,6 +297,6 @@ def writeOctetStream(oStr, minValue = 0):
     
     result = []
     for i in range(0, length):
-        result.append(UInt8(ord(oStr[i])))
+        result.append(UInt8(oStr[i]))
     
-    return (writeLength(mlength), tuple(result))
+    return writeLength(mlength), tuple(result)

@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -22,22 +22,25 @@ Basic Encoding Rules use in RDP.
 ASN.1 standard
 """
 
-from rdpy3.core.type import UInt8, UInt16Be, UInt32Be, String
-from rdpy3.core.error import InvalidExpectedDataException, InvalidSize
+from rdpy3.model.message import UInt8, UInt16Be, UInt32Be, Buffer
+from rdpy3.model.error import InvalidExpectedDataException, InvalidSize
 
-class BerPc(object):
+
+class BerPc:
     BER_PC_MASK = 0x20
     BER_PRIMITIVE = 0x00
     BER_CONSTRUCT = 0x20
 
-class Class(object):
+
+class Class:
     BER_CLASS_MASK = 0xC0
     BER_CLASS_UNIV = 0x00
     BER_CLASS_APPL = 0x40
     BER_CLASS_CTXT = 0x80
     BER_CLASS_PRIV = 0xC0
-        
-class Tag(object):
+
+
+class Tag:
     BER_TAG_MASK = 0x1F
     BER_TAG_BOOLEAN = 0x01
     BER_TAG_INTEGER = 0x02
@@ -47,6 +50,7 @@ class Tag(object):
     BER_TAG_ENUMERATED = 0x0A
     BER_TAG_SEQUENCE = 0x10
     BER_TAG_SEQUENCE_OF = 0x10
+
 
 def berPC(pc):
     """
@@ -59,7 +63,8 @@ def berPC(pc):
         return BerPc.BER_CONSTRUCT
     else:
         return BerPc.BER_PRIMITIVE
-    
+
+
 def readLength(s):
     """
     @summary: Read length of BER structure
@@ -69,7 +74,7 @@ def readLength(s):
     """
     size = None
     length = UInt8()
-    s.readType(length)
+    s.read_type(length)
     byte = length.value
     if byte & 0x80:
         byte &= ~0x80
@@ -79,10 +84,11 @@ def readLength(s):
             size = UInt16Be()
         else:
             raise InvalidExpectedDataException("BER length may be 1 or 2")
-        s.readType(size)
+        s.read_type(size)
     else:
         size = length
     return size.value
+
 
 def writeLength(size):
     """
@@ -94,7 +100,8 @@ def writeLength(size):
         return (UInt8(0x82), UInt16Be(size))
     else:
         return UInt8(size)
-    
+
+
 def readUniversalTag(s, tag, pc):
     """
     @summary: Read tag of BER packet
@@ -103,8 +110,9 @@ def readUniversalTag(s, tag, pc):
     @return: true if tag is correctly read
     """
     byte = UInt8()
-    s.readType(byte)
+    s.read_type(byte)
     return byte.value == ((Class.BER_CLASS_UNIV | berPC(pc)) | (Tag.BER_TAG_MASK & tag))
+
 
 def writeUniversalTag(tag, pc):
     """
@@ -115,6 +123,7 @@ def writeUniversalTag(tag, pc):
     """
     return UInt8((Class.BER_CLASS_UNIV | berPC(pc)) | (Tag.BER_TAG_MASK & tag))
 
+
 def readApplicationTag(s, tag):
     """
     @summary: Read application tag
@@ -123,11 +132,11 @@ def readApplicationTag(s, tag):
     @return: length of application packet
     """
     byte = UInt8()
-    s.readType(byte)
+    s.read_type(byte)
     if tag.value > 30:
         if byte.value != ((Class.BER_CLASS_APPL | BerPc.BER_CONSTRUCT) | Tag.BER_TAG_MASK):
             raise InvalidExpectedDataException()
-        s.readType(byte)
+        s.read_type(byte)
         if byte.value != tag.value:
             raise InvalidExpectedDataException("bad tag")
     else:
@@ -135,6 +144,7 @@ def readApplicationTag(s, tag):
             raise InvalidExpectedDataException()
         
     return readLength(s)
+
 
 def writeApplicationTag(tag, size):
     """
@@ -159,7 +169,7 @@ def readBoolean(s):
     if size != 1:
         raise InvalidExpectedDataException("bad boolean size")
     b = UInt8()
-    s.readType(b)
+    s.read_type(b)
     return bool(b.value)
 
 def writeBoolean(b):
@@ -186,21 +196,21 @@ def readInteger(s):
     
     if size == 1:
         integer = UInt8()
-        s.readType(integer)
+        s.read_type(integer)
         return integer.value
     elif size == 2:
         integer = UInt16Be()
-        s.readType(integer)
+        s.read_type(integer)
         return integer.value
     elif size == 3:
         integer1 = UInt8()
         integer2 = UInt16Be()
-        s.readType(integer1)
-        s.readType(integer2)
+        s.read_type(integer1)
+        s.read_type(integer2)
         return integer2.value + (integer1.value << 16)
     elif size == 4:
         integer = UInt32Be()
-        s.readType(integer)
+        s.read_type(integer)
         return integer.value
     else:
         raise InvalidExpectedDataException("Wrong integer size")
@@ -235,7 +245,7 @@ def writeOctetstring(value):
     @param value: string
     @return: BER octet string block 
     """
-    return (writeUniversalTag(Tag.BER_TAG_OCTET_STRING, False), writeLength(len(value)), String(value))
+    return (writeUniversalTag(Tag.BER_TAG_OCTET_STRING, False), writeLength(len(value)), Buffer(value))
 
 def readEnumerated(s):
     """
@@ -248,7 +258,7 @@ def readEnumerated(s):
     if readLength(s) != 1:
         raise InvalidSize("enumerate size is wrong")
     enumer = UInt8()
-    s.readType(enumer)
+    s.read_type(enumer)
     return enumer.value
 
 def writeEnumerated(enumerated):

@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -22,13 +22,13 @@ RDP Standard security layer
 """
 
 from hashlib import sha1 as sha
-from hashlib import md5 as md5
-import rdpy3.protocol.rdp.lic as lic, rdpy3.protocol.rdp.tpkt as tpkt
-from rdpy3.protocol.rdp.t125 import gcc, mcs
-from rdpy3.core.type import CompositeType, CallableValue, Stream, UInt32Le, UInt16Le, String, sizeof, UInt8
-from rdpy3.core.layer import LayerAutomata, IStreamSender
-from rdpy3.core.error import InvalidExpectedDataException
-from rdpy3.core import log
+from hashlib import md5
+from rdpy3.core import tpkt, lic
+from rdpy3.core.t125 import gcc, mcs
+from rdpy3.model.message import CompositeType, CallableValue, Stream, UInt32Le, UInt16Le, Buffer, sizeof, UInt8
+from rdpy3.model.layer import LayerAutomata, IStreamSender
+from rdpy3.model.error import InvalidExpectedDataException
+from rdpy3.model import log
 from rdpy3.security import rc4
 import rdpy3.security.rsa_wrapper as rsa
 
@@ -108,8 +108,8 @@ def saltedHash(inputData, salt, salt1, salt2):
     @param salt2: another another salt (ex: server random)
     @return : MD5(Salt + SHA1(Input + Salt + Salt1 + Salt2))
     """
-    sha1Digest = sha()
-    md5Digest = md5()
+    sha1Digest = sha.new()
+    md5Digest = md5.new()
     
     sha1Digest.update(inputData)
     sha1Digest.update(salt[:48])
@@ -130,7 +130,7 @@ def finalHash(key, random1, random2):
     @param random2: in 32
     @return MD5(in0[:16] + in1[:32] + in2[:32])
     """
-    md5Digest = md5()#.new()
+    md5Digest = md5.new()
     md5Digest.update(key)
     md5Digest.update(random1)
     md5Digest.update(random2)
@@ -162,12 +162,12 @@ def macData(macSaltKey, data):
     @param data: {str} data to sign
     @return: {str} signature
     """
-    sha1Digest = sha() #.new()
-    md5Digest = md5() #.new()
+    sha1Digest = sha.new()
+    md5Digest = md5.new()
     
     #encode length
     dataLength = Stream()
-    dataLength.writeType(UInt32Le(len(data)))
+    dataLength.write_type(UInt32Le(len(data)))
     
     sha1Digest.update(macSaltKey)
     sha1Digest.update("\x36" * 40)
@@ -190,15 +190,15 @@ def macSaltedData(macSaltKey, data, encryptionCount):
     @param encryptionCount: nb encrypted packet
     @return: {str} signature
     """
-    sha1Digest = sha() #new()
-    md5Digest = md5() #.new()
+    sha1Digest = sha.new()
+    md5Digest = md5.new()
     
     #encode length
     dataLengthS = Stream()
-    dataLengthS.writeType(UInt32Le(len(data)))
+    dataLengthS.write_type(UInt32Le(len(data)))
     
     encryptionCountS = Stream()
-    encryptionCountS.writeType(UInt32Le(encryptionCount))
+    encryptionCountS.write_type(UInt32Le(encryptionCount))
     
     sha1Digest.update(macSaltKey)
     sha1Digest.update("\x36" * 40)
@@ -221,8 +221,8 @@ def tempKey(initialKey, currentKey):
     @param currentKey: {str} key actually used
     @return: {str} temp key
     """
-    sha1Digest = sha() #new()
-    md5Digest = md5() #.new()
+    sha1Digest = sha.new()
+    md5Digest = md5.new()
     
     sha1Digest.update(initialKey)
     sha1Digest.update("\x36" * 40)
@@ -310,8 +310,8 @@ class ClientSecurityExchangePDU(CompositeType):
     def __init__(self):
         CompositeType.__init__(self)
         self.length = UInt32Le(lambda:(sizeof(self) - 4))
-        self.encryptedClientRandom = String(readLen = CallableValue(lambda:(self.length.value - 8)))
-        self.padding = String("\x00" * 8, readLen = CallableValue(8))
+        self.encryptedClientRandom = Buffer(readLen = CallableValue(lambda:(self.length.value - 8)))
+        self.padding = Buffer("\x00" * 8, readLen = CallableValue(8))
         
 class RDPInfo(CompositeType):
     """
@@ -331,13 +331,13 @@ class RDPInfo(CompositeType):
         self.cbAlternateShell = UInt16Le(lambda:sizeof(self.alternateShell) - 2)
         self.cbWorkingDir = UInt16Le(lambda:sizeof(self.workingDir) - 2)
         #microsoft domain
-        self.domain = String(readLen = CallableValue(lambda:self.cbDomain.value + 2), unicode = True)
-        self.userName = String(readLen = CallableValue(lambda:self.cbUserName.value + 2), unicode = True)
-        self.password = String(readLen = CallableValue(lambda:self.cbPassword.value + 2), unicode = True)
+        self.domain = Buffer(readLen = CallableValue(lambda: self.cbDomain.value + 2), unicode = True)
+        self.userName = Buffer(readLen = CallableValue(lambda: self.cbUserName.value + 2), unicode = True)
+        self.password = Buffer(readLen = CallableValue(lambda: self.cbPassword.value + 2), unicode = True)
         #shell execute at start of session
-        self.alternateShell = String(readLen = CallableValue(lambda:self.cbAlternateShell.value + 2), unicode = True)
+        self.alternateShell = Buffer(readLen = CallableValue(lambda: self.cbAlternateShell.value + 2), unicode = True)
         #working directory for session
-        self.workingDir = String(readLen = CallableValue(lambda:self.cbWorkingDir.value + 2), unicode = True)
+        self.workingDir = Buffer(readLen = CallableValue(lambda: self.cbWorkingDir.value + 2), unicode = True)
         self.extendedInfo = RDPExtendedInfo(conditional = extendedInfoConditional)
         
 class RDPExtendedInfo(CompositeType):
@@ -348,11 +348,11 @@ class RDPExtendedInfo(CompositeType):
         CompositeType.__init__(self, conditional = conditional)
         self.clientAddressFamily = UInt16Le(AfInet.AF_INET)
         self.cbClientAddress = UInt16Le(lambda:sizeof(self.clientAddress))
-        self.clientAddress = String(readLen = self.cbClientAddress, unicode = True)
+        self.clientAddress = Buffer(readLen = self.cbClientAddress, unicode = True)
         self.cbClientDir = UInt16Le(lambda:sizeof(self.clientDir))
-        self.clientDir = String(readLen = self.cbClientDir, unicode = True)
+        self.clientDir = Buffer(readLen = self.cbClientDir, unicode = True)
         #TODO make tiomezone
-        self.clientTimeZone = String("\x00" * 172)
+        self.clientTimeZone = Buffer("\x00" * 172)
         self.clientSessionId = UInt32Le()
         self.performanceFlags = UInt32Le()
 
@@ -410,9 +410,9 @@ class SecLayer(LayerAutomata, IStreamSender, tpkt.IFastPathListener, tpkt.IFastP
             self._decryptRc4 = rc4.RC4Key(self._currentDecrytKey)
             self._nbDecryptedPacket = 0
         
-        signature = String(readLen = CallableValue(8))
-        encryptedPayload = String()
-        s.readType((signature, encryptedPayload))
+        signature = Buffer(readLen = CallableValue(8))
+        encryptedPayload = Buffer()
+        s.read_type((signature, encryptedPayload))
         decrypted = rc4.crypt(self._decryptRc4, encryptedPayload.value)
 
         #ckeck signature
@@ -444,12 +444,12 @@ class SecLayer(LayerAutomata, IStreamSender, tpkt.IFastPathListener, tpkt.IFastP
         self._nbEncryptedPacket += 1
         
         s = Stream()
-        s.writeType(data)
+        s.write_type(data)
         
         if saltedMacGeneration:
-            return (String(macSaltedData(self._macKey, s.getvalue(), self._nbEncryptedPacket - 1)[:8]), String(rc4.crypt(self._encryptRc4, s.getvalue())))
+            return (Buffer(macSaltedData(self._macKey, s.getvalue(), self._nbEncryptedPacket - 1)[:8]), Buffer(rc4.crypt(self._encryptRc4, s.getvalue())))
         else:
-            return (String(macData(self._macKey, s.getvalue())[:8]), String(rc4.crypt(self._encryptRc4, s.getvalue())))
+            return (Buffer(macData(self._macKey, s.getvalue())[:8]), Buffer(rc4.crypt(self._encryptRc4, s.getvalue())))
     
     def recv(self, data):
         """
@@ -463,7 +463,7 @@ class SecLayer(LayerAutomata, IStreamSender, tpkt.IFastPathListener, tpkt.IFastP
         
         securityFlag = UInt16Le()
         securityFlagHi = UInt16Le()
-        data.readType((securityFlag, securityFlagHi))
+        data.read_type((securityFlag, securityFlagHi))
         
         if securityFlag.value & SecurityFlag.SEC_ENCRYPT:
             data = self.readEncryptedPayload(data, securityFlag.value & SecurityFlag.SEC_SECURE_CHECKSUM)
@@ -631,7 +631,7 @@ class Client(SecLayer):
         #packet preambule
         securityFlag = UInt16Le()
         securityFlagHi = UInt16Le()
-        s.readType((securityFlag, securityFlagHi))
+        s.read_type((securityFlag, securityFlagHi))
         
         if not (securityFlag.value & SecurityFlag.SEC_LICENSE_PKT):
             raise InvalidExpectedDataException("waiting license packet")
@@ -680,13 +680,13 @@ class Server(SecLayer):
         #packet preambule
         securityFlag = UInt16Le()
         securityFlagHi = UInt16Le()
-        s.readType((securityFlag, securityFlagHi))
+        s.read_type((securityFlag, securityFlagHi))
         
         if not (securityFlag.value & SecurityFlag.SEC_EXCHANGE_PKT):
             raise InvalidExpectedDataException("waiting client random")
         
         message = ClientSecurityExchangePDU()
-        s.readType(message)
+        s.read_type(message)
         clientRandom = rsa.decrypt(message.encryptedClientRandom.value[::-1], self._rsaPrivateKey)[::-1]
         
         self._macKey, self._initialEncryptKey, self._initialDecrytKey = generateKeys(   clientRandom, 
@@ -711,7 +711,7 @@ class Server(SecLayer):
         """
         securityFlag = UInt16Le()
         securityFlagHi = UInt16Le()
-        s.readType((securityFlag, securityFlagHi))
+        s.read_type((securityFlag, securityFlagHi))
         
         if not (securityFlag.value & SecurityFlag.SEC_INFO_PKT):
             raise InvalidExpectedDataException("Waiting info packet")
@@ -719,7 +719,7 @@ class Server(SecLayer):
         if securityFlag.value & SecurityFlag.SEC_ENCRYPT:
             s = self.readEncryptedPayload(s, securityFlag.value & SecurityFlag.SEC_SECURE_CHECKSUM)
         
-        s.readType(self._info)
+        s.read_type(self._info)
         #next state send error license
         self.sendLicensingErrorMessage()
         #reinit state

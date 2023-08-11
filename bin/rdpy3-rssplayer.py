@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -23,11 +23,11 @@ rss file player
 
 import sys, os, getopt, socket
 
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
-from rdpy3.core import log, rss
+from rdpy3.model import log, rss
 from rdpy3.ui.qt5 import QRemoteDesktop, RDPBitmapToQtImage
-from rdpy3.core.scancode import scancodeToChar
+from rdpy3.model.scancode import scancodeToChar
 log._LOG_LEVEL = log.Level.INFO
 
 class RssPlayerWidget(QRemoteDesktop):
@@ -46,7 +46,7 @@ class RssPlayerWidget(QRemoteDesktop):
                 """ Not Handle """
         QRemoteDesktop.__init__(self, width, height, RssAdaptor())
         
-class RssPlayerWindow(QtGui.QWidget):
+class RssPlayerWindow(QtWidgets.QWidget):
     """
     @summary: main window of rss player
     """
@@ -54,14 +54,14 @@ class RssPlayerWindow(QtGui.QWidget):
         super(RssPlayerWindow, self).__init__()
         
         self._viewer = RssPlayerWidget(800, 600)
-        self._text = QtGui.QTextEdit()
+        self._text = QtWidgets.QTextEdit()
         self._text.setReadOnly(True)
         self._text.setFixedHeight(150)
 
-        scrollViewer = QtGui.QScrollArea()
+        scrollViewer = QtWidgets.QScrollArea()
         scrollViewer.setWidget(self._viewer)
         
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(scrollViewer, 1)
         layout.addWidget(self._text, 2)
         
@@ -71,7 +71,7 @@ class RssPlayerWindow(QtGui.QWidget):
 
 def help():
     print("Usage: rdpy3-rssplayer [-h] rss_filepath")
-    
+
 def start(widget, rssFile):
     loop(widget, rssFile, rssFile.nextEvent())
   
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             
     filepath = args[0]
     #create application
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QGuiApplication(sys.argv)
     
     mainWindow = RssPlayerWindow()
     mainWindow.show()

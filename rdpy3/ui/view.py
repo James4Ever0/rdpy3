@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -20,7 +20,7 @@
 """
 Fake widget
 """
-from rdpy3.core.error import CallPureVirtualFuntion
+from rdpy3.model.error import CallPureVirtualFuntion
 from PyQt5 import QtGui, QtCore
 
 
@@ -107,7 +107,7 @@ class List(IView):
     """
     List widget simulate by QT painter
     """
-    def __init__(self, labels, width, height, callback, backgroudColor = QtCore.Qt.black):
+    def __init__(self, labels, width, height, callback, backgroudColor = QtCore.Qt.GlobalColor.black):
         self._labels = labels
         self._width = width
         self._height = height
@@ -150,16 +150,16 @@ class List(IView):
             for label in self._labels:
                 rect = QtCore.QRect(0, i * self._cellHeight, self._width - 2, self._cellHeight)
                 if i == self._current:
-                    qp.setPen(QtCore.Qt.darkGreen)
+                    qp.setPen(QtCore.Qt.GlobalColor.darkGreen)
                     qp.drawRoundedRect(rect, 5.0, 5.0)
-                qp.setPen(QtCore.Qt.white)  
-                qp.setFont(QtGui.QFont('arial', self._fontSize, QtGui.QFont.Bold))
-                qp.drawText(rect, QtCore.Qt.AlignCenter, label)
+                qp.setPen(QtCore.Qt.GlobalColor.white)  
+                qp.setFont(QtGui.QFont('arial', self._fontSize, QtGui.QFont.Weight.Bold))
+                qp.drawText(rect, QtCore.Qt.AlignmentFlag.AlignCenter, label)
                 i += 1
         render.drawImage(drawArea)
         
 class Window(IView):
-    def __init__(self, width, height, backgroundColor = QtCore.Qt.black):
+    def __init__(self, width, height, backgroundColor = QtCore.Qt.GlobalColor.black):
         self._views = []
         self._focusIndex = 0
         self._width = width
@@ -185,7 +185,7 @@ class Window(IView):
             view.update(render, force)
             
 class Label(IView):
-    def __init__(self, label, width, height, font = QtGui.QFont(), fontColor = QtCore.Qt.white, backgroundColor = QtCore.Qt.black):
+    def __init__(self, label, width, height, font = QtGui.QFont(), fontColor = QtCore.Qt.GlobalColor.white, backgroundColor = QtCore.Qt.GlobalColor.black):
         self._label = label
         self._width = width
         self._height = height
@@ -218,7 +218,7 @@ class Label(IView):
         with QtGui.QPainter(drawArea) as qp:
             qp.setFont(self._font)
             qp.setPen(self._fontColor) 
-            qp.drawText(drawArea.rect(), QtCore.Qt.AlignCenter, self._label)
+            qp.drawText(drawArea.rect(), QtCore.Qt.AlignmentFlag.AlignCenter, self._label)
         render.drawImage(drawArea)
 
 class RDPRenderer(IRender):
@@ -232,14 +232,16 @@ class RDPRenderer(IRender):
         self._dy = 0
         
     def getImageFormat(self):
-        if self._colorDepth == 15:
-            return QtGui.QImage.Format_RGB15
-        elif self._colorDepth == 16:
-            return QtGui.QImage.Format_RGB16
-        elif self._colorDepth == 24:
-            return QtGui.QImage.Format_RGB24
+        # if self._colorDepth == 15:
+        #     return QtGui.QImage.Format.Format_RGB15
+        if self._colorDepth == 16:
+            return QtGui.QImage.Format.Format_RGB16
+        # elif self._colorDepth == 24:
+        #     return QtGui.QImage.Format.Format_RGB24
         elif self._colorDepth == 32:
-            return QtGui.QImage.Format_RGB32
+            return QtGui.QImage.Format.Format_RGB32
+        else:
+            raise Exception("Invalid color depth: %d" % self._colorDepth)
         
     def translate(self, dx, dy):
         self._dx += dx

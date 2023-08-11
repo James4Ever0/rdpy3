@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -23,13 +23,13 @@ Qt specific code
 QRemoteDesktop is a widget use for render in rdpy
 """
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtCore, QtGui
+from rdpy3.core.rdp import RDPClientObserver
 from rdpy3.protocol.rfb.rfb import RFBClientObserver
-from rdpy3.protocol.rdp.rdp import RDPClientObserver
-from rdpy3.core.error import CallPureVirtualFuntion
+from rdpy3.model.error import CallPureVirtualFuntion
 import sys
 
-import rdpy3.core.log as log
+import rdpy3.model.log as log
 import rle
 
 class QAdaptor(object):
@@ -72,9 +72,11 @@ def qtImageFormatFromRFBPixelFormat(pixelFormat):
     @summary: convert RFB pixel format to QtGui.QImage format
     """
     if pixelFormat.BitsPerPixel.value == 32:
-        return QtGui.QImage.Format_RGB32
+        return QtGui.QImage.Format.Format_RGB32
     elif pixelFormat.BitsPerPixel.value == 16:
-        return QtGui.QImage.Format_RGB16
+        return QtGui.QImage.Format.Format_RGB16
+
+
 
 class RFBClientQt(RFBClientObserver, QAdaptor):
     """
@@ -141,11 +143,11 @@ class RFBClientQt(RFBClientObserver, QAdaptor):
         """
         button = e.button()
         buttonNumber = 0
-        if button == QtCore.Qt.LeftButton:
+        if button == QtCore.Qt.MouseButton.LeftButton:
             buttonNumber = 1
-        elif button == QtCore.Qt.MidButton:
+        elif button == QtCore.Qt.MouseButton.MidButton:
             buttonNumber = 2
-        elif button == QtCore.Qt.RightButton:
+        elif button == QtCore.Qt.MouseButton.RightButton:
             buttonNumber = 3  
         self.mouseEvent(buttonNumber, e.pos().x(), e.pos().y())
         
@@ -179,6 +181,7 @@ class RFBClientQt(RFBClientObserver, QAdaptor):
         #do something maybe a message
         pass
 
+
 def RDPBitmapToQtImage(width, height, bitsPerPixel, isCompress, data):
     """
     @summary: Bitmap transformation to Qt object
@@ -195,36 +198,36 @@ def RDPBitmapToQtImage(width, height, bitsPerPixel, isCompress, data):
         if isCompress:
             buf = bytearray(width * height * 2)
             rle.bitmap_decompress(buf, width, height, data, 2)
-            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format_RGB555)
+            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format.Format_RGB555)
         else:
-            image = QtGui.QImage(data, width, height, QtGui.QImage.Format_RGB555).transformed(QtGui.QMatrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
+            image = QtGui.QImage(data, width, height, QtGui.QImage.Format.Format_RGB555).transformed(QtGui.QTransform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
     
     elif bitsPerPixel == 16:
         if isCompress:
             buf = bytearray(width * height * 2)
             rle.bitmap_decompress(buf, width, height, data, 2)
-            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format_RGB16)
+            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format.Format_RGB16)
         else:
-            image = QtGui.QImage(data, width, height, QtGui.QImage.Format_RGB16).transformed(QtGui.QMatrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
+            image = QtGui.QImage(data, width, height, QtGui.QImage.Format.Format_RGB16).transformed(QtGui.QTransform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
     
     elif bitsPerPixel == 24:
         if isCompress:
             buf = bytearray(width * height * 3)
             rle.bitmap_decompress(buf, width, height, data, 3)
-            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format_RGB888)
+            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format.Format_RGB888)
         else:
-            image = QtGui.QImage(data, width, height, QtGui.QImage.Format_RGB888).transformed(QtGui.QMatrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
+            image = QtGui.QImage(data, width, height, QtGui.QImage.Format.Format_RGB888).transformed(QtGui.QTransform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
             
     elif bitsPerPixel == 32:
         if isCompress:
             buf = bytearray(width * height * 4)
             rle.bitmap_decompress(buf, width, height, data, 4)
-            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format_RGB32)
+            image = QtGui.QImage(buf, width, height, QtGui.QImage.Format.Format_RGB32)
         else:
-            image = QtGui.QImage(data, width, height, QtGui.QImage.Format_RGB32).transformed(QtGui.QMatrix(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
+            image = QtGui.QImage(data, width, height, QtGui.QImage.Format.Format_RGB32).transformed(QtGui.QTransform(1.0, 0.0, 0.0, -1.0, 0.0, 0.0))
     else:
         log.error("Receive image in bad format")
-        image = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+        image = QtGui.QImage(width, height, QtGui.QImage.Format.Format_RGB32)
     return image
   
 class RDPClientQt(RDPClientObserver, QAdaptor):
@@ -256,11 +259,11 @@ class RDPClientQt(RDPClientObserver, QAdaptor):
         """
         button = e.button()
         buttonNumber = 0
-        if button == QtCore.Qt.LeftButton:
+        if button == QtCore.Qt.MouseButton.LeftButton:
             buttonNumber = 1
-        elif button == QtCore.Qt.RightButton:
+        elif button == QtCore.Qt.MouseButton.RightButton:
             buttonNumber = 2
-        elif button == QtCore.Qt.MidButton:
+        elif button == QtCore.Qt.MouseButton.MidButton:
             buttonNumber = 3  
         self._controller.sendPointerEvent(e.pos().x(), e.pos().y(), buttonNumber, isPressed)
         
@@ -281,7 +284,7 @@ class RDPClientQt(RDPClientObserver, QAdaptor):
         @param e: QKeyEvent
         @param isPressed: event come from press or release action
         """
-        self._controller.sendWheelEvent(e.pos().x(), e.pos().y(), (abs(e.delta()) / 8) / 15, e.delta() < 0, e.orientation() == QtCore.Qt.Horizontal)
+        self._controller.sendWheelEvent(e.pos().x(), e.pos().y(), (abs(e.delta()) / 8) / 15, e.delta() < 0, e.orientation() == QtCore.Qt.Orientation.Horizontal)
     
     def closeEvent(self, e):
         """
@@ -348,7 +351,7 @@ class QRemoteDesktop(QtWidgets.QWidget):
         #bind mouse event
         self.setMouseTracking(True)
         #buffer image
-        self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+        self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format.Format_RGB32)
     
     def notifyImage(self, x, y, qimage, width, height):
         """
@@ -369,7 +372,7 @@ class QRemoteDesktop(QtWidgets.QWidget):
         @param width: {int} width of widget
         @param height: {int} height of widget
         """
-        self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+        self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format.Format_RGB32)
         QtWidgets.QWidget.resize(self, width, height)
         
     def paintEvent(self, e):

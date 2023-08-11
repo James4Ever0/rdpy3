@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -26,7 +26,7 @@ take screenshot of login page
 import sys, os, getopt
 from PyQt5 import QtCore, QtGui
 from rdpy3.protocol.rfb import rfb
-import rdpy3.core.log as log
+import rdpy3.model.log as log
 from rdpy3.ui.qt5 import qtImageFormatFromRFBPixelFormat
 from twisted.internet import task
 
@@ -119,7 +119,7 @@ class RFBScreenShotFactory(rfb.ClientFactory):
                 """
                 log.info("connected %s"%addr)
                 width, height = self._controller.getScreen()
-                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format_RGB32)
+                self._buffer = QtGui.QImage(width, height, QtGui.QImage.Format.Format_RGB32)
             
             def onClose(self):
                 """
@@ -155,7 +155,7 @@ if __name__ == '__main__':
             password = arg
         
     #create application
-    app = QtGui.QApplication(sys.argv)
+    app = QtGui.QGuiApplication(sys.argv)
     
     #add qt5 reactor
     import qt5reactor

@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -26,12 +26,12 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.core.layer
+import rdpy3.model.layer
 
 class LayerTest(unittest.TestCase):
     """
     @summary:  represent test case for all classes and function
-                present in rdpy3.core.layer
+                present in rdpy3.model.layer
     """
     
     class LayerCaseException(Exception):
@@ -44,19 +44,19 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test if connect event is send from transport to presentation
         """
-        class TestConnect(rdpy3.core.layer.Layer):
+        class TestConnect(rdpy3.model.layer.Layer):
             def connect(self):
                 raise LayerTest.LayerCaseException()
             
-        self.assertRaises(LayerTest.LayerCaseException, rdpy3.core.layer.Layer(presentation = TestConnect()).connect)
+        self.assertRaises(LayerTest.LayerCaseException, rdpy3.model.layer.Layer(presentation = TestConnect()).connect)
         
     def test_layer_automata_more_than_expected(self):
         """
         @summary: test layer automata mechanism if data received is more than expected
         """
-        class TestAutomata(rdpy3.core.layer.RawLayer):
+        class TestAutomata(rdpy3.model.layer.RawLayer):
             def expectedCallBack(self, data):
-                if data.dataLen() == 4:
+                if data.data_len() == 4:
                     raise LayerTest.LayerCaseException()
             
         t = TestAutomata()
@@ -67,9 +67,9 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test layer automata mechanism
         """
-        class TestAutomata(rdpy3.core.layer.RawLayer):
+        class TestAutomata(rdpy3.model.layer.RawLayer):
             def expectedCallBack(self, data):
-                if data.dataLen() == 4:
+                if data.data_len() == 4:
                     raise LayerTest.LayerCaseException()
             
         t = TestAutomata()

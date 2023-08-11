@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -64,7 +64,7 @@ def TypeAttributes(typeClass):
     @return: class decorator
     """
     def wrapper(cls):
-        for c_name, c_value in cls.__dict__.iteritems():
+        for c_name, c_value in cls.__dict__.items():
             if c_name[0] != '_' and not callable(c_value):
                 setattr(cls, c_name, typeClass(c_value))
         return cls

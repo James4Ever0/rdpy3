@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -26,9 +26,9 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.protocol.rdp.t125.ber as ber
-import rdpy3.core.type as type
-import rdpy3.core.error as error
+import rdpy3.core.t125.ber as ber
+import rdpy3.model.message as type
+
 
 class BERTest(unittest.TestCase):
     """
@@ -40,7 +40,7 @@ class BERTest(unittest.TestCase):
         @summary: test readLength function in ber module
         """
         s1 = type.Stream()
-        s1.writeType(type.UInt8(0x1a))
+        s1.write_type(type.UInt8(0x1a))
         s1.pos = 0
         
         l1 = ber.readLength(s1)
@@ -48,7 +48,7 @@ class BERTest(unittest.TestCase):
         self.assertTrue(l1 == 0x1a, "readLength fail in small format")
         
         s2 = type.Stream()
-        s2.writeType((type.UInt8(0x81),type.UInt8(0xab)))
+        s2.write_type((type.UInt8(0x81), type.UInt8(0xab)))
         s2.pos = 0
         
         l2 = ber.readLength(s2)
@@ -56,7 +56,7 @@ class BERTest(unittest.TestCase):
         self.assertTrue(l2 == 0xab, "readLength fail in big format of size 1")
         
         s3 = type.Stream()
-        s3.writeType((type.UInt8(0x82),type.UInt16Be(0xabab)))
+        s3.write_type((type.UInt8(0x82), type.UInt16Be(0xabab)))
         s3.pos = 0
         
         l3 = ber.readLength(s3)

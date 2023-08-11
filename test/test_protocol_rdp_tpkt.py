@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -26,9 +26,9 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.protocol.rdp.tpkt as tpkt
-import rdpy3.core.type as type
-import rdpy3.core.error as error
+import rdpy3.core.tpkt as tpkt
+import rdpy3.model.message as type
+
 
 class TPKTTest(unittest.TestCase):
     """
@@ -49,7 +49,7 @@ class TPKTTest(unittest.TestCase):
             def connect(self):
                 raise TPKTTest.TPKT_PASS()
             
-        layer = tpkt.TPKT(Presentation())
+        layer = tpkt.Tpkt(Presentation())
         self.assertRaises(TPKTTest.TPKT_PASS, layer.connect)
         
     def test_tpkt_layer_recv(self):
@@ -60,15 +60,15 @@ class TPKTTest(unittest.TestCase):
             def connect(self):
                 pass
             def recv(self, data):
-                data.readType(type.String("test_tpkt_layer_recv", constant = True))
+                data.read_type(type.String("test_tpkt_layer_recv", constant = True))
                 raise TPKTTest.TPKT_PASS()
             
         message = type.String("test_tpkt_layer_recv")
         
         s = type.Stream()
-        s.writeType((type.UInt8(tpkt.Action.FASTPATH_ACTION_X224), type.UInt8(), type.UInt16Be(type.sizeof(message) + 4), message))
+        s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_X224), type.UInt8(), type.UInt16Be(type.sizeof(message) + 4), message))
         
-        layer = tpkt.TPKT(Presentation())
+        layer = tpkt.Tpkt(Presentation())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())
         
@@ -80,15 +80,15 @@ class TPKTTest(unittest.TestCase):
             def setFastPathSender(self, fastPathSender):
                 pass
             def recvFastPath(self, secFlag, fastPathS):
-                fastPathS.readType(type.String("test_tpkt_layer_recv_fastpath", constant = True))
+                fastPathS.read_type(type.String("test_tpkt_layer_recv_fastpath", constant = True))
                 raise TPKTTest.TPKT_PASS()
             
         message = type.String("test_tpkt_layer_recv_fastpath")
         
         s = type.Stream()
-        s.writeType((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt8(type.sizeof(message) + 2), message))
+        s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt8(type.sizeof(message) + 2), message))
         
-        layer = tpkt.TPKT(None)
+        layer = tpkt.Tpkt(None)
         layer.initFastPath(FastPathLayer())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())
@@ -101,15 +101,15 @@ class TPKTTest(unittest.TestCase):
             def setFastPathSender(self, fastPathSender):
                 pass
             def recvFastPath(self, secflag, fastPathS):
-                fastPathS.readType(type.String("test_tpkt_layer_recv_fastpath_ext_length", constant = True))
+                fastPathS.read_type(type.String("test_tpkt_layer_recv_fastpath_ext_length", constant = True))
                 raise TPKTTest.TPKT_PASS()
             
         message = type.String("test_tpkt_layer_recv_fastpath_ext_length")
         
         s = type.Stream()
-        s.writeType((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt16Be((type.sizeof(message) + 3) | 0x8000), message))
+        s.write_type((type.UInt8(tpkt.Action.FASTPATH_ACTION_FASTPATH), type.UInt16Be((type.sizeof(message) + 3) | 0x8000), message))
         
-        layer = tpkt.TPKT(None)
+        layer = tpkt.Tpkt(None)
         layer.initFastPath(FastPathLayer())
         layer.connect()
         self.assertRaises(TPKTTest.TPKT_PASS, layer.dataReceived, s.getvalue())

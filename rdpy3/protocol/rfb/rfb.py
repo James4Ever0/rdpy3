@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -25,11 +25,11 @@ Implement Remote FrameBuffer protocol use in VNC client and server
 @todo: more encoding rectangle
 """
 
-from rdpy3.core.layer import RawLayer, RawLayerClientFactory
-from rdpy3.core.type import UInt8, UInt16Be, UInt32Be, SInt32Be, String, CompositeType
-from rdpy3.core.error import InvalidValue, CallPureVirtualFuntion
+from rdpy3.model.layer import RawLayer, RawLayerClientFactory
+from rdpy3.model.message import UInt8, UInt16Be, UInt32Be, SInt32Be, String, CompositeType
+from rdpy3.model.error import InvalidValue, CallPureVirtualFuntion
 from rdpy3.security.pyDes import des
-import rdpy3.core.log as log
+import rdpy3.model.log as log
 
 class ProtocolVersion(object):
     """

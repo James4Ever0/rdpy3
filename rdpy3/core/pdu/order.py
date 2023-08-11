@@ -1,9 +1,9 @@
 #
 # Copyright (c) 2014-2015 Sylvain Peyrefitte
 #
-# This file is part of rdpy.
+# This file is part of rdpy3.
 #
-# rdpy is free software: you can redistribute it and/or modify
+# rdpy3 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -21,9 +21,9 @@
 GDI order structure
 """
 
-from rdpy3.core import log
-from rdpy3.core.error import InvalidExpectedDataException
-from rdpy3.core.type import CompositeType, UInt8, String, FactoryType, SInt8, SInt16Le
+from rdpy3.model import log
+from rdpy3.model.error import InvalidExpectedDataException
+from rdpy3.model.message import CompositeType, UInt8, Buffer, FactoryType, SInt8, SInt16Le
 
 class ControlFlag(object):
     """
@@ -100,7 +100,7 @@ class PrimaryDrawingOrder(CompositeType):
                     return c(self.controlFlags)
             log.debug("unknown Order type : %s"%hex(self.orderType.value))
             #read entire packet
-            return String()
+            return Buffer()
         
         if order is None:
             order = FactoryType(OrderFactory)
