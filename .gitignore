@@ -8,4 +8,4 @@ dist/*
 build/*
 rdpy3.egg-info/*
 *.whl
-*.sh
+publish.sh
