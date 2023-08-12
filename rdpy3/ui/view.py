@@ -20,7 +20,7 @@
 """
 Fake widget
 """
-from rdpy3.model.error import CallPureVirtualFuntion
+from rdpy3.core.error import CallPureVirtualFuntion
 from PyQt5 import QtGui, QtCore
 
 
