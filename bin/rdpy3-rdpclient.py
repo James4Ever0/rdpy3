@@ -24,7 +24,8 @@ example of use rdpy3 as rdp client
 import sys
 import asyncio
 
-from rdpy3.core import tpkt, x224
+import rdpy3.core.tpkt as tpkt
+import rdpy3.core.x224 as x224
 from rdpy3.core.nla import ntlm
 from rdpy3.core.t125 import mcs
 from rdpy3.model.message import UInt8
