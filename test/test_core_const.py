@@ -18,16 +18,17 @@
 #
 
 """
-unit test for rdpy3.model.const module
+unit test for rdpy3.core.const module
 """
 
+from builtins import object
 import os, sys
 # Change path so we find rdpy
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.model.const
-import rdpy3.model.message
+import rdpy3.core.const
+import rdpy3.core.type
 
 class ConstTest(unittest.TestCase):
     '''
@@ -38,20 +39,20 @@ class ConstTest(unittest.TestCase):
         '''
         test if type attributes decorator works
         '''
-        @rdpy3.model.const.TypeAttributes(rdpy3.model.message.UInt16Le)
-        class Test:
+        @rdpy3.core.const.TypeAttributes(rdpy3.core.type.UInt16Le)
+        class Test(object):
             MEMBER_1 = 1
             MEMBER_2 = 2
         
-        self.assertIsInstance(Test.MEMBER_1, rdpy3.model.message.UInt16Le, "MEMBER_1 is not in correct type")
-        self.assertIsInstance(Test.MEMBER_2, rdpy3.model.message.UInt16Le, "MEMBER_2 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_1, rdpy3.core.type.UInt16Le, "MEMBER_1 is not in correct type")
+        self.assertIsInstance(Test.MEMBER_2, rdpy3.core.type.UInt16Le, "MEMBER_2 is not in correct type")
         
     def test_const(self):
         '''
         test if get on const class member generate new object each
         '''
-        @rdpy3.model.const.ConstAttributes
-        class Test:
+        @rdpy3.core.const.ConstAttributes
+        class Test(object):
             MEMBER_1 = 1
             MEMBER_2 = 2
             

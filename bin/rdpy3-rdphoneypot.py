@@ -21,15 +21,17 @@
 """
 RDP Honey pot use Rss scenario file to simulate RDP server
 """
+from __future__ import division
+from __future__ import print_function
 
-import sys, getopt, datetime
+from past.utils import old_div
+import sys, os, getopt, time, datetime
 
-from rdpy3.model import log, rss
-from rdpy3.core import rdp
+from rdpy3.core import log, error, rss
+from rdpy3.protocol.rdp import rdp
 from twisted.internet import reactor
 
 log._LOG_LEVEL = log.Level.INFO
-
 
 class HoneyPotServer(rdp.RDPServerObserver):
     def __init__(self, controller, rssFileSizeList):
@@ -41,7 +43,7 @@ class HoneyPotServer(rdp.RDPServerObserver):
         self._rssFileSizeList = rssFileSizeList
         self._dx, self._dy = 0, 0
         self._rssFile = None
-
+        
     def onReady(self):
         """
         @summary:  Event use to inform state of server stack
@@ -51,96 +53,61 @@ class HoneyPotServer(rdp.RDPServerObserver):
         @see: rdp.RDPServerObserver.onReady
         """
         if self._rssFile is None:
-            # compute which RSS file to keep
+            #compute which RSS file to keep
             width, height = self._controller.getScreen()
             size = width * height
-            rssFilePath = sorted(
-                self._rssFileSizeList, key=lambda x: abs(x[0][0] * x[0][1] - size)
-            )[0][1]
-            log.info(
-                "%s --- select file (%s, %s) -> %s"
-                % (
-                    datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                    width,
-                    height,
-                    rssFilePath,
-                )
-            )
+            rssFilePath = sorted(self._rssFileSizeList, key = lambda x: abs(x[0][0] * x[0][1] - size))[0][1]
+            log.info("%s --- select file (%s, %s) -> %s"%(datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'),width, height, rssFilePath))
             self._rssFile = rss.createReader(rssFilePath)
-
+        
         domain, username, password = self._controller.getCredentials()
         hostname = self._controller.getHostname()
-        log.info(
-            """%s --- Credentials: domain: %s username: %s password: %s hostname: %s"""
-            % (
-                datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                domain,
-                username,
-                password,
-                hostname,
-            )
-        )
+        log.info("""%s --- Credentials: domain: %s username: %s password: %s hostname: %s"""%(datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'), domain, username, password, hostname));
         self.start()
-
+        
     def onClose(self):
-        """HoneyPot"""
-
+        """ HoneyPot """
+        
     def onKeyEventScancode(self, code, isPressed, isExtended):
-        """HoneyPot"""
-
+        """ HoneyPot """
+    
     def onKeyEventUnicode(self, code, isPressed):
-        """HoneyPot"""
-
+        """ HoneyPot """
+        
     def onPointerEvent(self, x, y, button, isPressed):
-        """HoneyPot"""
-
+        """ HoneyPot """
+        
     def start(self):
         self.loopScenario(self._rssFile.nextEvent())
-
+        
     def loopScenario(self, nextEvent):
         """
         @summary: main loop event
         """
         if nextEvent.type.value == rss.EventType.UPDATE:
-            self._controller.sendUpdate(
-                nextEvent.event.destLeft.value + self._dx,
-                nextEvent.event.destTop.value + self._dy,
-                nextEvent.event.destRight.value + self._dx,
-                nextEvent.event.destBottom.value + self._dy,
-                nextEvent.event.width.value,
-                nextEvent.event.height.value,
-                nextEvent.event.bpp.value,
-                nextEvent.event.format.value == rss.UpdateFormat.BMP,
-                nextEvent.event.data.value,
-            )
-
+            self._controller.sendUpdate(nextEvent.event.destLeft.value + self._dx, nextEvent.event.destTop.value + self._dy, nextEvent.event.destRight.value + self._dx, nextEvent.event.destBottom.value + self._dy, nextEvent.event.width.value, nextEvent.event.height.value, nextEvent.event.bpp.value, nextEvent.event.format.value == rss.UpdateFormat.BMP, nextEvent.event.data.value)
+            
         elif nextEvent.type.value == rss.EventType.CLOSE:
             self._controller.close()
             return
-
+            
         elif nextEvent.type.value == rss.EventType.SCREEN:
             self._controller.setColorDepth(nextEvent.event.colorDepth.value)
-            # compute centering because we cannot resize client
+            #compute centering because we cannot resize client
             clientSize = nextEvent.event.width.value, nextEvent.event.height.value
             serverSize = self._controller.getScreen()
-
-            self._dx, self._dy = (max(0, serverSize[0] - clientSize[0]) / 2), max(
-                0, (serverSize[1] - clientSize[1]) / 2
-            )
-            # restart connection sequence
+            
+            self._dx, self._dy = (old_div(max(0, serverSize[0] - clientSize[0]), 2)), max(0, old_div((serverSize[1] - clientSize[1]), 2))
+            #restart connection sequence
             return
-
+        
         e = self._rssFile.nextEvent()
-        reactor.callLater(
-            float(e.timestamp.value) / 1000.0, lambda: self.loopScenario(e)
-        )
-
-
+        reactor.callLater(float(e.timestamp.value) / 1000.0, lambda:self.loopScenario(e))
+        
 class HoneyPotServerFactory(rdp.ServerFactory):
     """
     @summary: Factory on listening events
     """
-
     def __init__(self, rssFileSizeList, privateKeyFilePath, certificateFilePath):
         """
         @param rssFileSizeList: {Tuple} Tuple(Tuple(width, height), rssFilePath)
@@ -149,24 +116,16 @@ class HoneyPotServerFactory(rdp.ServerFactory):
         """
         rdp.ServerFactory.__init__(self, 16, privateKeyFilePath, certificateFilePath)
         self._rssFileSizeList = rssFileSizeList
-
+        
     def buildObserver(self, controller, addr):
         """
         @param controller: {rdp.RDPServerController}
         @param addr: destination address
         @see: rdp.ServerFactory.buildObserver
         """
-        log.info(
-            "%s --- Connection from %s:%s"
-            % (
-                datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                addr.host,
-                addr.port,
-            )
-        )
+        log.info("%s --- Connection from %s:%s"%(datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'), addr.host, addr.port))
         return HoneyPotServer(controller, self._rssFileSizeList)
-
-
+    
 def readSize(filePath):
     """
     @summary: read size event in rss file
@@ -179,30 +138,26 @@ def readSize(filePath):
             return None
         elif e.type.value == rss.EventType.SCREEN:
             return e.event.width.value, e.event.height.value
-
-
+    
 def help():
     """
     @summary: Print help in console
     """
-    print(
-        """
-    Usage:  rdpy3-rdphoneypot.py 
+    print("""
+    Usage:  rdpy-rdphoneypot.py 
             [-L logfile]
             [-l listen_port default 3389] 
             [-k private_key_file_path (mandatory for SSL)] 
             [-c certificate_file_path (mandatory for SSL)] 
             rss_filepath(1..n)
-    """
-    )
-
-
-if __name__ == "__main__":
+    """)
+    
+if __name__ == '__main__':
     listen = "3389"
     privateKeyFilePath = None
     certificateFilePath = None
     rssFileSizeList = []
-
+    
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hl:k:c:L:")
     except getopt.GetoptError:
@@ -212,38 +167,21 @@ if __name__ == "__main__":
             help()
             sys.exit()
         elif opt == "-L":
-            log._LOG_FILE = arg
+            log._LOG_FILE = arg 
         elif opt == "-l":
             listen = arg
         elif opt == "-k":
             privateKeyFilePath = arg
         elif opt == "-c":
             certificateFilePath = arg
-
-    # build size map
-    log.info(
-        "%s --- Start rdphoneypot"
-        % datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    )
-    log.info(
-        "%s --- Build size map"
-        % datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    )
+    
+    #build size map
+    log.info("%s --- Start rdphoneypot"%datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+    log.info("%s --- Build size map"%datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
     for arg in args:
         size = readSize(arg)
         rssFileSizeList.append((size, arg))
-        log.info(
-            "%s --- (%s, %s) -> %s"
-            % (
-                datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                size[0],
-                size[1],
-                arg,
-            )
-        )
-
-    reactor.listenTCP(
-        int(listen),
-        HoneyPotServerFactory(rssFileSizeList, privateKeyFilePath, certificateFilePath),
-    )
+        log.info("%s --- (%s, %s) -> %s"%(datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%fZ'), size[0], size[1], arg))
+    
+    reactor.listenTCP(int(listen), HoneyPotServerFactory(rssFileSizeList, privateKeyFilePath, certificateFilePath))
     reactor.run()

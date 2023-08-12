@@ -22,15 +22,18 @@
 example of use rdpy
 take screenshot of login page
 """
+from __future__ import print_function
 
 import getopt
+import os
 import sys
 
-from PyQt5 import QtGui
-from rdpy3.core import rdp
+from PyQt5 import QtCore, QtGui
+from rdpy3.protocol.rdp import rdp
 from rdpy3.ui.qt5 import RDPBitmapToQtImage
-import rdpy3.model.log as log
-from rdpy3.model.error import RDPSecurityNegoFail
+import rdpy3.core.log as log
+from rdpy3.core.error import RDPSecurityNegoFail
+from twisted.internet import task
 
 # set log level
 log._LOG_LEVEL = log.Level.INFO
@@ -190,10 +193,10 @@ def main(width, height, path, timeout, hosts):
 
 
 def help():
-    print("Usage: rdpy3-rdpscreenshot [options] ip[:port]")
+    print("Usage: rdpy-rdpscreenshot [options] ip[:port]")
     print("\t-w: width of screen default value is 1024")
     print("\t-l: height of screen default value is 800")
-    print("\t-o: file path of screenshot default(/tmp/rdpy3-rdpscreenshot.jpg)")
+    print("\t-o: file path of screenshot default(/tmp/rdpy-rdpscreenshot.jpg)")
     print("\t-t: timeout of connection without any updating order (default is 2s)")
 
 if __name__ == '__main__':

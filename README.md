@@ -1,12 +1,12 @@
-# RDPY - for Python3 
+# rdpy3- for Python3 
 
-**this is a fork for porting RDPY to Python3**
+**this is a fork for porting rdpy3to Python3**
 
 Remote Desktop Protocol in twisted python.
 
-RDPY is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). RDPY is built over the event driven network engine Twisted. RDPY support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
+rdpy3is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). rdpy3is built over the event driven network engine Twisted. rdpy3support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
 
-RDPY provides the following RDP and VNC binaries:
+rdpy3provides the following RDP and VNC binaries:
 * RDP Man In The Middle proxy which record session
 * RDP Honeypot
 * RDP screenshoter
@@ -17,7 +17,7 @@ RDPY provides the following RDP and VNC binaries:
 
 ## Build
 
-RDPY is fully implemented in python, except the bitmap decompression algorithm which is implemented in C for performance purposes.
+rdpy3is fully implemented in python, except the bitmap decompression algorithm which is implemented in C for performance purposes.
 
 ### Dependencies
 
@@ -45,9 +45,9 @@ $ brew install qt sip pyqt
 
 install PyQt5 and PyWin32
 
-## RDPY Binaries
+## rdpy3Binaries
 
-RDPY comes with some very useful binaries. These binaries are linux and windows compatible.
+rdpy3comes with some very useful binaries. These binaries are linux and windows compatible.
 
 ### rdpy3-rdpclient
 
@@ -114,13 +114,13 @@ rdpy3-rssplayer is use to replay Record Session Scenario (rss) files generates b
 $ rdpy3-rssplayer.py rss_file_path
 ```
 
-## RDPY Qt Widget
+## rdpy3Qt Widget
 
-RDPY can also be used as Qt widget through rdpy3.ui.qt5.QRemoteDesktop class. It can be embedded in your own Qt application. qt5reactor must be used in your app for Twisted and Qt to work together. For more details, see sources of rdpy3-rdpclient.
+rdpy3can also be used as Qt widget through rdpy3.ui.qt5.QRemoteDesktop class. It can be embedded in your own Qt application. qt5reactor must be used in your app for Twisted and Qt to work together. For more details, see sources of rdpy3-rdpclient.
 
-## RDPY library
+## rdpy3library
 
-In a nutshell RDPY can be used as a protocol library with a twisted engine.
+In a nutshell rdpy3can be used as a protocol library with a twisted engine.
 
 ### Simple RDP Client
 

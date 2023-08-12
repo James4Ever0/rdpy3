@@ -3,7 +3,7 @@
 import setuptools
 from distutils.core import setup, Extension
 
-version = "2.0.8"
+version = "3.0.0"
 packageName = "rdpy3"
 
 # import os
@@ -25,23 +25,23 @@ setup(
     python_requires=">=3",
     long_description=open("README.md").read(),
     # long_description="""
-    # RDPY is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (Client and Server side). RDPY is built over the event driven network engine Twisted.
-    # RDPY provide RDP and VNC binaries : RDP Man In The Middle proxy which record session, RDP Honeypot, RDP screenshoter, RDP client, VNC client, VNC screenshoter, RSS Player
+    # rdpy3 is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (Client and Server side). rdpy3 is built over the event driven network engine Twisted.
+    # rdpy3 provide RDP and VNC binaries : RDP Man In The Middle proxy which record session, RDP Honeypot, RDP screenshoter, RDP client, VNC client, VNC screenshoter, RSS Player
     # """,
     author="Sylvain Peyrefitte",
     author_email="citronneur@gmail.com",
     url="https://github.com/james4ever0/rdpy3",
     packages=[
-        "rdpy3",
-        "rdpy3.model",
-        "rdpy3.security",
-        "rdpy3.core",
-        "rdpy3.core.pdu",
-        "rdpy3.core.nla",
-        "rdpy3.core.t125",
-        "rdpy3.ui",
-        "rdpy3.protocol",
-        "rdpy3.protocol.rfb",
+			'rdpy3', 
+			'rdpy3.core',
+			'rdpy3.security', 
+			'rdpy3.protocol', 
+			'rdpy3.protocol.rdp', 
+			'rdpy3.protocol.rdp.pdu', 
+			'rdpy3.protocol.rdp.nla',
+			'rdpy3.protocol.rdp.t125',
+			'rdpy3.protocol.rfb', 
+			'rdpy3.ui'
     ],
     ext_modules=[Extension("rle", ["ext/rle.c"])],
     scripts=[

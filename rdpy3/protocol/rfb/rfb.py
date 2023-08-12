@@ -24,12 +24,18 @@ Implement Remote FrameBuffer protocol use in VNC client and server
 @todo: server side of protocol
 @todo: more encoding rectangle
 """
+from __future__ import division
 
-from rdpy3.model.layer import RawLayer, RawLayerClientFactory
-from rdpy3.model.message import UInt8, UInt16Be, UInt32Be, SInt32Be, String, CompositeType
-from rdpy3.model.error import InvalidValue, CallPureVirtualFuntion
+from builtins import str
+from builtins import chr
+from builtins import range
+from past.utils import old_div
+from builtins import object
+from rdpy3.core.layer import RawLayer, RawLayerClientFactory
+from rdpy3.core.type import UInt8, UInt16Be, UInt32Be, SInt32Be, String, CompositeType
+from rdpy3.core.error import InvalidValue, CallPureVirtualFuntion
 from rdpy3.security.pyDes import des
-import rdpy3.model.log as log
+import rdpy3.core.log as log
 
 class ProtocolVersion(object):
     """
@@ -408,7 +414,7 @@ class RFB(RawLayer):
         """
         data.readType(self._currentRect)
         if self._currentRect.encoding.value == Encoding.RAW:
-            self.expect(self._currentRect.width.value * self._currentRect.height.value * (self._pixelFormat.BitsPerPixel.value / 8), self.recvRectBody)
+            self.expect(self._currentRect.width.value * self._currentRect.height.value * (old_div(self._pixelFormat.BitsPerPixel.value, 8)), self.recvRectBody)
     
     def recvRectBody(self, data):
         """

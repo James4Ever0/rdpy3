@@ -20,14 +20,16 @@
 """
 rss file player
 """
+from __future__ import print_function
 
+from builtins import object
 import sys, os, getopt, socket
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-from rdpy3.model import log, rss
+from rdpy3.core import log, rss
 from rdpy3.ui.qt5 import QRemoteDesktop, RDPBitmapToQtImage
-from rdpy3.model.scancode import scancodeToChar
+from rdpy3.core.scancode import scancodeToChar
 log._LOG_LEVEL = log.Level.INFO
 
 class RssPlayerWidget(QRemoteDesktop):
@@ -70,7 +72,7 @@ class RssPlayerWindow(QtWidgets.QWidget):
         self.setGeometry(0, 0, 800, 600)
 
 def help():
-    print("Usage: rdpy3-rssplayer [-h] rss_filepath")
+    print("Usage: rdpy-rssplayer [-h] rss_filepath")
 
 def start(widget, rssFile):
     loop(widget, rssFile, rssFile.nextEvent())

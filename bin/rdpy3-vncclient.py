@@ -27,7 +27,7 @@ from PyQt5 import QtGui, QtWidgets
 from rdpy3.ui.qt5 import RFBClientQt
 from rdpy3.protocol.rfb import rfb
 
-import rdpy3.model.log as log
+import rdpy3.core.log as log
 log._LOG_LEVEL = log.Level.INFO
         
 class RFBClientQtFactory(rfb.ClientFactory):
@@ -52,7 +52,7 @@ class RFBClientQtFactory(rfb.ClientFactory):
         client = RFBClientQt(controller)
         #create qt widget
         self._w = client.getWidget()
-        self._w.setWindowTitle('rdpy3-vncclient')
+        self._w.setWindowTitle('rdpy-vncclient')
         self._w.show()
         return client
         

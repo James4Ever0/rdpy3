@@ -26,7 +26,7 @@
 
 #include <Python.h>
 
-/* Specific rename for RDPY integration */
+/* Specific rename for rdpy3integration */
 #define uint8	unsigned char
 #define uint16	unsigned short
 #define unimpl(str, code)
@@ -938,19 +938,10 @@ static PyMethodDef rle_methods[] =
      {"bitmap_decompress", bitmap_decompress_wrapper, METH_VARARGS, "decompress bitmap from microsoft rle algorithm."},
      {NULL, NULL, 0, NULL}
 };
-
-static struct PyModuleDef rle =
-{
-    PyModuleDef_HEAD_INIT,
-    "rle", /* name of module */
-    "",          /* module documentation, may be NULL */
-    -1,          /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
-    rle_methods
-};
  
 PyMODINIT_FUNC
-PyInit_rle(void)
+initrle(void)
 {
-     (void) PyModule_Create(&rle);
+     (void) Py_InitModule("rle", rle_methods);
 }
 

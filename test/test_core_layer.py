@@ -26,12 +26,12 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.model.layer
+import rdpy3.core.layer
 
 class LayerTest(unittest.TestCase):
     """
     @summary:  represent test case for all classes and function
-                present in rdpy3.model.layer
+                present in rdpy3.core.layer
     """
     
     class LayerCaseException(Exception):
@@ -44,21 +44,19 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test if connect event is send from transport to presentation
         """
-        class TestConnect(rdpy3.model.layer.Layer):
+        class TestConnect(rdpy3.core.layer.Layer):
             def connect(self):
                 raise LayerTest.LayerCaseException()
             
-        self.assertRaises(LayerTest.LayerCaseException, rdpy3.model.layer.Layer(presentation = TestConnect()).connect)
+        self.assertRaises(LayerTest.LayerCaseException, rdpy3.core.layer.Layer(presentation = TestConnect()).connect)
         
     def test_layer_automata_more_than_expected(self):
         """
         @summary: test layer automata mechanism if data received is more than expected
         """
-        class TestAutomata(rdpy3.model.layer.RawLayer):
+        class TestAutomata(rdpy3.core.layer.RawLayer):
             def expectedCallBack(self, data):
-                # print("DATA", data) # Stream
-                # print("DATA LEN?", data.data_len()) # 0
-                if data.data_len() == 4:
+                if data.dataLen() == 4:
                     raise LayerTest.LayerCaseException()
             
         t = TestAutomata()
@@ -69,9 +67,9 @@ class LayerTest(unittest.TestCase):
         """
         @summary: test layer automata mechanism
         """
-        class TestAutomata(rdpy3.model.layer.RawLayer):
+        class TestAutomata(rdpy3.core.layer.RawLayer):
             def expectedCallBack(self, data):
-                if data.data_len() == 4:
+                if data.dataLen() == 4:
                     raise LayerTest.LayerCaseException()
             
         t = TestAutomata()

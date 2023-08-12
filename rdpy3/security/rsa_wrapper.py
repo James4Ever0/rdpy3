@@ -22,10 +22,6 @@ Wrapper around RSA library
 """
 
 import rsa
-import rsa.transform
-import rsa.common
-import rsa.core
-import rsa.randnum
 
 def newkeys(size):
     """

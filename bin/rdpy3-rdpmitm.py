@@ -21,7 +21,7 @@
 """
 RDP proxy with Man in the middle capabilities
 Save RDP events in output RSR file format
-RSR file format can be read by rdpy3-rsrplayer.py
+RSR file format can be read by rdpy-rsrplayer.py
                ----------------------------
 Client RDP -> | ProxyServer | ProxyClient | -> Server RDP
               ----------------------------
@@ -29,12 +29,13 @@ Client RDP -> | ProxyServer | ProxyClient | -> Server RDP
                    -----------------
 """
 
+import sys
 import os
 import argparse
 import time
 
-from rdpy3.model import log, rss
-from rdpy3.core import rdp
+from rdpy3.core import log, error, rss
+from rdpy3.protocol.rdp import rdp
 from twisted.internet import reactor
 
 log._LOG_LEVEL = log.Level.INFO

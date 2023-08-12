@@ -26,9 +26,9 @@ import os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 import unittest
-import rdpy3.core.t125.per as per
-import rdpy3.model.message as type
-import rdpy3.model.error as error
+import rdpy3.protocol.rdp.t125.per as per
+import rdpy3.core.type as type
+import rdpy3.core.error as error
 
 class PERTest(unittest.TestCase):
     """
@@ -40,7 +40,7 @@ class PERTest(unittest.TestCase):
         @summary: test readLength function in per module
         """
         s1 = type.Stream()
-        s1.write_type(type.UInt8(0x1a))
+        s1.writeType(type.UInt8(0x1a))
         s1.pos = 0
         
         l1 = per.readLength(s1)
@@ -48,7 +48,7 @@ class PERTest(unittest.TestCase):
         self.assertTrue(l1 == 0x1a, "readLength fail in small format")
         
         s2 = type.Stream()
-        s2.write_type(type.UInt16Be(0x1abc | 0x8000))
+        s2.writeType(type.UInt16Be(0x1abc | 0x8000))
         s2.pos = 0
         
         l2 = per.readLength(s2)
@@ -78,15 +78,15 @@ class PERTest(unittest.TestCase):
         for t in [type.UInt8, type.UInt16Be, type.UInt32Be]:
             v = t(3)
             s = type.Stream()
-            s.write_type((per.writeLength(type.sizeof(v)), v))
+            s.writeType((per.writeLength(type.sizeof(v)), v))
             s.pos = 0
             
-            self.assertTrue(per.readInteger(s) == 3, "invalid readLength for type %s" % t)
+            self.assertTrue(per.readInteger(s) == 3, "invalid readLength for type %s"%t)
         
         #error case
         for l in [0, 3, 5]:
             s = type.Stream()
-            s.write_type(per.writeLength(l))
+            s.writeType(per.writeLength(l))
             s.pos = 0
             
             self.assertRaises(error.InvalidValue, per.readInteger, s)

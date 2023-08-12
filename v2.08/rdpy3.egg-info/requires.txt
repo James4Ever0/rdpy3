@@ -1,0 +1,8 @@
+pyopenssl>=23.2.0
+twisted
+PyQt5
+PyQt5-sip
+service_identity
+rsa
+qt5reactor
+pyasn1
