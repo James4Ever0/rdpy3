@@ -3,7 +3,7 @@
 import setuptools
 from distutils.core import setup, Extension
 
-version = "2.0.5"
+version = "2.0.6"
 packageName = "rdpy3"
 
 # import os
@@ -35,10 +35,13 @@ setup(
         "rdpy3",
         "rdpy3.model",
         "rdpy3.security",
+        "rdpy3.core",
         "rdpy3.core.pdu",
         "rdpy3.core.nla",
         "rdpy3.core.t125",
         "rdpy3.ui",
+        "rdpy3.protocol",
+        "rdpy3.protocol.rfb",
     ],
     ext_modules=[Extension("rle", ["ext/rle.c"])],
     scripts=[
