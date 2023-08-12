@@ -138,35 +138,35 @@ class RawLayerClientFactory(asyncio.Protocol):
         raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "connectionLost", "RawLayerClientFactory"))
 
 
-# class RawLayerServerFactory(protocol.ServerFactory):
-#     """
-#     @summary: Abstract class for Raw layer server factory
-#     """
-#     def buildProtocol(self, addr):
-#         """
-#         @summary: Function call from twisted
-#         @param addr: destination address
-#         """
-#         rawLayer = self.buildRawLayer(addr)
-#         rawLayer.setFactory(self)
-#         return rawLayer
-#
-#     def buildRawLayer(self, addr):
-#         """
-#         @summary: Override this function to build raw layer
-#         @param addr: destination address
-#         """
-#         raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "recv", "IStreamListener"))
-#
-#     def connectionLost(self, rawlayer, reason):
-#         """
-#         @summary: Override this method to handle connection lost
-#         @param rawlayer: rawLayer that cause connectionLost event
-#         @param reason: twisted reason
-#         """
-#         raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "recv", "IStreamListener"))
-#
-#
+class RawLayerServerFactory(protocol.ServerFactory):
+    """
+    @summary: Abstract class for Raw layer server factory
+    """
+    def buildProtocol(self, addr):
+        """
+        @summary: Function call from twisted
+        @param addr: destination address
+        """
+        rawLayer = self.buildRawLayer(addr)
+        rawLayer.setFactory(self)
+        return rawLayer
+
+    def buildRawLayer(self, addr):
+        """
+        @summary: Override this function to build raw layer
+        @param addr: destination address
+        """
+        raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "recv", "IStreamListener"))
+
+    def connectionLost(self, rawlayer, reason):
+        """
+        @summary: Override this method to handle connection lost
+        @param rawlayer: rawLayer that cause connectionLost event
+        @param reason: twisted reason
+        """
+        raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "recv", "IStreamListener"))
+
+
 class RawLayer(asyncio.Protocol, LayerAutomata, IStreamSender):
     """
     @summary:  Wait event from twisted engine
