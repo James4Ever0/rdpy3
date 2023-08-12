@@ -3,7 +3,7 @@
 import setuptools
 from distutils.core import setup, Extension
 
-version = "3.0.2"
+version = "3.0.3"
 packageName = "rdpy3"
 
 # import os

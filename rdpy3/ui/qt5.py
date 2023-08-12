@@ -27,10 +27,10 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 # from rdpy3.core.rdp import RDPClientObserver
 from rdpy3.protocol.rdp.rdp import RDPClientObserver
 from rdpy3.protocol.rfb.rfb import RFBClientObserver
-from rdpy3.model.error import CallPureVirtualFuntion
+from rdpy3.core.error import CallPureVirtualFuntion
 import sys
 
-import rdpy3.model.log as log
+import rdpy3.core.log as log
 import rle
 
 class QAdaptor(object):
