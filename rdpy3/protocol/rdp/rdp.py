@@ -26,9 +26,7 @@ from builtins import range
 from builtins import object
 from rdpy3.core import layer
 from rdpy3.core.error import CallPureVirtualFuntion, InvalidValue
-from . import pdu.layer
-from . import pdu.data
-from . import pdu.caps
+from . import pdu
 import rdpy3.core.log as log
 from . import tpkt, x224, sec
 from .t125 import mcs, gcc
