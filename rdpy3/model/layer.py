@@ -138,6 +138,7 @@ class RawLayerClientFactory(asyncio.Protocol):
         raise CallPureVirtualFuntion("%s:%s defined by interface %s"%(self.__class__, "connectionLost", "RawLayerClientFactory"))
 
 
+from twisted.internet import protocol
 class RawLayerServerFactory(protocol.ServerFactory):
     """
     @summary: Abstract class for Raw layer server factory
