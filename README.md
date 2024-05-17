@@ -1,6 +1,6 @@
 # rdpy3- for Python3 
 
-**This is a DEPRECATED fork for porting rdpy3to Python3**
+**This is a DEPRECATED fork for porting rdpy3 to Python3**
 
 **Users should either run old rdpy with Python 2 docker containers or use alternative libraries.**
 
