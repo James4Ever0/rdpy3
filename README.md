@@ -2,7 +2,7 @@
 
 **This is a DEPRECATED fork for porting rdpy3to Python3**
 
-**Users should either run old rdpy with Python2 docker containers or use alternative libraries.**
+**Users should either run old rdpy with Python 2 docker containers or use alternative libraries.**
 
 Remote Desktop Protocol in twisted python.
 
