@@ -1,4 +1,4 @@
-# rdpy3- for Python3 
+# rdpy3 for Python3 
 
 You are welcomed to check out my latest research: [Cybergod](https://github.com/james4ever0/agi_computer_control). This projects can automate all kinds of computer tasks with AI, including those requiring keyboard and mouse interactions.
 
