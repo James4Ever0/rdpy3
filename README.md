@@ -4,9 +4,9 @@ You are welcomed to check out my latest research: [Cybergod](https://github.com/
 
 ---
 
-**This is a DEPRECATED fork for porting rdpy3 to Python3**
+**This is a DEPRECATED fork for porting rdpy3 to Python3.**
 
-**Everything is expected to be broken**
+**Everything is expected to be broken.**
 
 **Users should either run old rdpy with Python 2 docker containers or use alternative libraries like python3-aardwolf.**
 
