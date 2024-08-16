@@ -10,6 +10,8 @@ You are welcomed to check out my latest research: [Cybergod](https://github.com/
 
 **Users should either run old rdpy with Python 2 docker containers or use alternative libraries like python3-aardwolf.**
 
+---
+
 Remote Desktop Protocol in twisted python.
 
 rdpy3 is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). rdpy3 is built over the event driven network engine Twisted. rdpy3support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
