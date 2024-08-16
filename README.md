@@ -12,7 +12,7 @@ You are welcomed to check out my latest research: [Cybergod](https://github.com/
 
 Remote Desktop Protocol in twisted python.
 
-rdpy3is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). rdpy3is built over the event driven network engine Twisted. rdpy3support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
+rdpy3 is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). rdpy3 is built over the event driven network engine Twisted. rdpy3support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
 
 rdpy3provides the following RDP and VNC binaries:
 * RDP Man In The Middle proxy which record session
@@ -25,7 +25,7 @@ rdpy3provides the following RDP and VNC binaries:
 
 ## Build
 
-rdpy3is fully implemented in python, except the bitmap decompression algorithm which is implemented in C for performance purposes.
+rdpy3 is fully implemented in python, except the bitmap decompression algorithm which is implemented in C for performance purposes.
 
 ### Dependencies
 
