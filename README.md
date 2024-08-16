@@ -4,6 +4,8 @@
 
 **Users should either run old rdpy with Python 2 docker containers or use alternative libraries like python3-aardwolf.**
 
+You are welcomed to check out my latest research: [Cybergod](https://github.com/james4ever0/agi_computer_control). This projects can automate all kinds of computer tasks with AI, including those requiring keyboard and mouse interactions.
+
 Remote Desktop Protocol in twisted python.
 
 rdpy3is a pure Python implementation of the Microsoft RDP (Remote Desktop Protocol) protocol (client and server side). rdpy3is built over the event driven network engine Twisted. rdpy3support standard RDP security layer, RDP over SSL and NLA authentication (through ntlmv2 authentication protocol).
